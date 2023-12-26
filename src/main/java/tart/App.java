@@ -1,5 +1,7 @@
 package tart;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
@@ -11,11 +13,22 @@ import tart.matcher.type.*;
 import tart.matcher.wrapper.*;
 import tart.normalizer.*;
 
-public class App {
+public class App extends Frame {
 
     private static final HashMap<String, Integer> distinctFiles = new HashMap<>();
 
-    public static List<File> listFiles(File dir, FileMatcher fileMather) {
+    String msg = "";
+
+    public App() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+    }
+
+    public static java.util.List<File> listFiles(File dir, FileMatcher fileMather) {
         var files = new ArrayList<File>();
         var queue = new LinkedList<File>();
         queue.add(dir);
@@ -47,11 +60,7 @@ public class App {
             fooFiles.add(file.getName());
         }
 
-        System.out.print(mather.getClass());
-        System.out.print(" ");
-        System.out.print(files.size());
-        System.out.print(" -> ");
-        System.out.println(fooFiles.size());
+        System.out.printf("%s %d -> %d%n", mather.getClass(), files.size(), fooFiles.size());
     }
 
     private static void transformAll(File dir, FileNormalizer transformator, boolean printFiles) {
@@ -64,9 +73,7 @@ public class App {
             var fileTimestamp = transformator.getTimestamp(file);
             if (fileTimestamp == null) {
                 if (printFiles) {
-                    System.out.print(oldName);
-                    System.out.print(" -> ");
-                    System.out.println("skipped");
+                    System.out.printf("%s -> skipped%n", oldName);
                 }
                 continue;
             }
@@ -86,7 +93,7 @@ public class App {
             }
 
             if (printFiles) {
-                System.out.printf("%s -> %s%n",oldName, newName);
+                System.out.printf("%s -> %s%n", oldName, newName);
             }
 
             Path source = Paths.get(oldFullName);
@@ -99,13 +106,17 @@ public class App {
             }
         }
 
-        System.out.print(counter);
-        System.out.print("/");
-        System.out.println(total);
+        System.out.printf("%d/%d%n", counter, total);
         System.out.println(distinctFiles.size());
     }
 
     public static void main(String[] args) {
+        var appwin = new App();
+
+        appwin.setSize(new Dimension(320, 320));
+        appwin.setTitle("Tart");
+        appwin.setVisible(true);
+
         if (args.length == 0) {
             System.out.println("Path is not provided");
             return;
@@ -114,7 +125,6 @@ public class App {
         var dir = args[0];
 
         var rootDir = new File(dir);
-
         if (!rootDir.exists()) {
             System.out.printf("%s not exists%n", dir);
             return;
@@ -161,5 +171,10 @@ public class App {
         for (var t : transformations) {
             transformAll(rootDir, t, false);
         }
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        g.drawString(msg, 20, 80);
     }
 }
