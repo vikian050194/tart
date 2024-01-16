@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.stream.*;
 import tart.matcher.*;
 import tart.matcher.data.*;
@@ -15,11 +16,68 @@ import tart.normalizer.*;
 
 public class App extends Frame {
 
-    private static final HashMap<String, Integer> distinctFiles = new HashMap<>();
+    CheckboxMenuItem debug;
+    CheckboxMenuItem test;
 
-    String msg = "";
+    private final HashMap<String, Integer> distinctFiles = new HashMap<>();
 
     public App() {
+        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 4));
+
+        var bar = new MenuBar();
+        setMenuBar(bar);
+
+        var file = new Menu("File");
+        MenuItem i1 = file.add(new MenuItem("New..."));
+        var openShortcut = new MenuShortcut(KeyEvent.VK_O, false);
+        MenuItem i2 = file.add(new MenuItem("Open...", openShortcut));
+        MenuItem i3 = file.add(new MenuItem("Close"));
+        MenuItem i4 = file.add(new MenuItem("-"));
+        var quitShortcut = new MenuShortcut(KeyEvent.getExtendedKeyCodeForChar('Q'), true);
+        MenuItem i5 = file.add(new MenuItem("Quit...", quitShortcut));
+        bar.add(file);
+
+        var edit = new Menu("Edit");
+        MenuItem i6 = edit.add(new MenuItem("Cut"));
+        MenuItem i7 = edit.add(new MenuItem("Copy"));
+        MenuItem i8 = edit.add(new MenuItem("Paste"));
+        MenuItem i9 = edit.add(new MenuItem("-"));
+
+        var sub = new Menu("Special");
+        var i10 = sub.add(new MenuItem("First"));
+        var i11 = sub.add(new MenuItem("Second"));
+        var i12 = sub.add(new MenuItem("Third"));
+        edit.add(sub);
+
+        debug = new CheckboxMenuItem("Debug");
+        edit.add(debug);
+        test = new CheckboxMenuItem("Test");
+        edit.add(test);
+
+        bar.add(edit);
+
+        var handler = new MenuHandler();
+
+        i1.addActionListener(handler);
+        i2.addActionListener(handler);
+        i3.addActionListener(handler);
+        i4.addActionListener(handler);
+        i5.addActionListener(handler);
+        i6.addActionListener(handler);
+        i7.addActionListener(handler);
+        i8.addActionListener(handler);
+        i9.addActionListener(handler);
+        i10.addActionListener(handler);
+        i11.addActionListener(handler);
+        i12.addActionListener(handler);
+
+        debug.addItemListener(handler);
+        test.addItemListener(handler);
+
+        i5.addActionListener((ae) -> System.exit(0));
+
+        i2.addActionListener((ae) -> onOpen());
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
@@ -28,7 +86,7 @@ public class App extends Frame {
         });
     }
 
-    public static java.util.List<File> listFiles(File dir, FileMatcher fileMather) {
+    public List<File> listFiles(File dir, FileMatcher fileMather) {
         var files = new ArrayList<File>();
         var queue = new LinkedList<File>();
         queue.add(dir);
@@ -48,22 +106,69 @@ public class App extends Frame {
         return files;
     }
 
-    private static void printAll(File dir, FileMatcher mather, boolean printFiles) {
-        var files = listFiles(dir, mather);
+    private String printAll(File dir, FileMatcher matcher, boolean printFiles) {
+        var matchedFiles = listFiles(dir, matcher);
+        var uniqueFiles = new HashSet<String>();
 
-        var fooFiles = new HashSet<String>();
-
-        for (var file : files) {
+        for (var file : matchedFiles) {
             if (printFiles) {
                 System.out.println(file.getName());
             }
-            fooFiles.add(file.getName());
+            uniqueFiles.add(file.getName());
         }
 
-        System.out.printf("%s %d -> %d%n", mather.getClass(), files.size(), fooFiles.size());
+        return String.format("%s: %d -> %d", matcher.getClass().getCanonicalName(), matchedFiles.size(), uniqueFiles.size());
     }
 
-    private static void transformAll(File dir, FileNormalizer transformator, boolean printFiles) {
+    private void onOpen() {
+        var isDebug = debug.getState();
+
+        removeAll();
+
+        var dialog = new FileDialog(this, "Select directory", FileDialog.LOAD);
+        dialog.setVisible(true);
+        var dir = dialog.getDirectory();
+
+        var rootDir = new File(dir);
+
+        if (!rootDir.exists()) {
+            System.out.printf("%s not exists%n", dir);
+            return;
+        }
+
+        var matchers = new ArrayList<FileMatcher>();
+
+        matchers.add(new AllFileMatcher());
+        matchers.add(new JpgFileMatcher());
+        matchers.add(new JpegFileMatcher());
+        matchers.add(new PngFileMatcher());
+        matchers.add(new Mp4FileMatcher());
+        matchers.add(new GifFileMatcher());
+        matchers.add(new FileMatcher14());
+        matchers.add(new FileMatcher42());
+        matchers.add(new FileMatcher42All());
+        matchers.add(new FileMatcher86());
+        matchers.add(new FileMatcher86Brackets());
+        matchers.add(new FileMatcher86All());
+        matchers.add(new FileMatcherWp82());
+        matchers.add(new FileMatcherImg4());
+        matchers.add(new InvertedFileMatcherWrapper(new FileMatcher86All()));
+        matchers.add(new InlineFileMatcher("(?!skip).*"));
+
+        for (var m : matchers) {
+            var result = printAll(rootDir, m, isDebug);
+            if (isDebug) {
+                System.out.println(result);
+            }
+            var newLabel = new Label();
+            newLabel.setText(result);
+            add(newLabel);
+        }
+
+        setVisible(true);
+    }
+
+    private void transformAll(File dir, FileNormalizer transformator, boolean printFiles) {
         var files = listFiles(dir, (FileMatcher) transformator);
         var total = files.size();
         var counter = 0;
@@ -111,70 +216,31 @@ public class App extends Frame {
     }
 
     public static void main(String[] args) {
-        var appwin = new App();
+        var app = new App();
 
-        appwin.setSize(new Dimension(320, 320));
-        appwin.setTitle("Tart");
-        appwin.setVisible(true);
-
-        if (args.length == 0) {
-            System.out.println("Path is not provided");
-            return;
-        }
-
-        var dir = args[0];
-
-        var rootDir = new File(dir);
-        if (!rootDir.exists()) {
-            System.out.printf("%s not exists%n", dir);
-            return;
-        }
-
-        var mathers = new ArrayList<FileMatcher>();
-
-        mathers.add(new AllFileMatcher());
-        mathers.add(new JpgFileMatcher());
-        mathers.add(new JpegFileMatcher());
-        mathers.add(new PngFileMatcher());
-        mathers.add(new Mp4FileMatcher());
-        mathers.add(new GifFileMatcher());
-        mathers.add(new FileMatcher14());
-        mathers.add(new FileMatcher42());
-        mathers.add(new FileMatcher42All());
-        mathers.add(new FileMatcher86());
-        mathers.add(new FileMatcher86Brackets());
-        mathers.add(new FileMatcher86All());
-        mathers.add(new FileMatcherWp82());
-
-        for (var m : mathers) {
-            printAll(rootDir, m, false);
-        }
-
-        System.out.println();
-
-        printAll(rootDir, new InvertedFileMatcherWrapper(new FileMatcher86All()), true);
-
-        System.out.println();
-
-        var transformations = new ArrayList<FileNormalizer>();
-//        transformations.add(new FileNormalizer14());
-//        transformations.add(new FileNormalizer42());
-//        transformations.add(new FileNormalizer86All());
-//        transformations.add(new FileNormalizer86());
-//        transformations.add(new FileNormalizer86Bracket());
-//        transformations.add(new FileNormalizer42All());
-//        transformations.add(new FileNormalizerWp82());
-//        transformations.add(new FileNormalizerWp82());
-//        transformations.add(new FileNormalizerImg4Jpg());
-//        transformations.add(new FileNormalizerMeta(new InlineFileMatcher("(?!skip).*", new InvertedFileMatcherWrapper(new FileMatcher42All()))));
-
-        for (var t : transformations) {
-            transformAll(rootDir, t, false);
-        }
+        app.setSize(new Dimension(720, 480));
+        app.setTitle("Tart");
+        app.setVisible(true);
     }
 
-    @Override
-    public void paint(Graphics g) {
-        g.drawString(msg, 20, 80);
+    class MenuHandler implements ActionListener, ItemListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            var isDebug = debug.getState();
+
+            var command = ae.getActionCommand();
+
+            if (isDebug) {
+                System.out.printf(command);
+            }
+
+            repaint();
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent ie) {
+            repaint();
+        }
     }
 }

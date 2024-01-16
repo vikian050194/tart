@@ -5,7 +5,7 @@ import tart.matcher.FileMatcher;
 public class FileMatcherImg4 extends FileMatcher {
 
     public FileMatcherImg4() {
-        super(null);
+        this(null);
     }
 
     public FileMatcherImg4(FileMatcher matcher) {
