@@ -22,7 +22,7 @@ public class App extends Frame {
     private final HashMap<String, Integer> distinctFiles = new HashMap<>();
 
     public App() {
-        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 4));
+        setLayout(new GridLayout(0, 1, 0, 10));
 
         var bar = new MenuBar();
         setMenuBar(bar);
@@ -117,7 +117,7 @@ public class App extends Frame {
             uniqueFiles.add(file.getName());
         }
 
-        return String.format("%s: %d -> %d", matcher.getClass().getCanonicalName(), matchedFiles.size(), uniqueFiles.size());
+        return String.format("%s: %d -> %d", matcher.getClass().getSimpleName(), matchedFiles.size(), uniqueFiles.size());
     }
 
     private void onOpen() {
@@ -128,6 +128,10 @@ public class App extends Frame {
         var dialog = new FileDialog(this, "Select directory", FileDialog.LOAD);
         dialog.setVisible(true);
         var dir = dialog.getDirectory();
+
+        var dirs = dir.split("/");
+        var endDir = dirs[dirs.length - 1];
+        setTitle(String.format("%s - Tart ", endDir));
 
         var rootDir = new File(dir);
 

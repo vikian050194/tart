@@ -6,7 +6,9 @@
 
 ## About
 
-TODO
+**tart** is desktop application for images viewing and tagging.
+
+You can take a look at [list of questions and problems](./QA.md) that I faced during development.
 
 ## Motivation
 
