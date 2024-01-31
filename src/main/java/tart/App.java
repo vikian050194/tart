@@ -3,80 +3,100 @@ package tart;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.nio.file.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.*;
+import javax.imageio.ImageIO;
 import tart.matcher.*;
-import tart.matcher.data.*;
-import tart.matcher.type.*;
-import tart.matcher.wrapper.*;
-import tart.normalizer.*;
 
-public class App extends Frame {
+public class App extends Frame implements KeyListener {
 
-    CheckboxMenuItem debug;
-    CheckboxMenuItem test;
+    private File root;
 
-    private final HashMap<String, Integer> distinctFiles = new HashMap<>();
+    private final Label lab;
+    private final LoadedImage lim;
+    private final Panel tags;
+
+    private final CheckboxMenuItem viewHidden;
+    private final CheckboxMenuItem viewDebug;
+
+    private double scale = 3;
+
+    private final ArrayList<File> files = new ArrayList<>();
+    private int index = 0;
 
     public App() {
-        setLayout(new GridLayout(0, 1, 0, 10));
+        setLayout(new BorderLayout());
+        setFocusable(true);
+
+        lab = new Label("<EMPTY>");
+        add(lab, BorderLayout.NORTH);
+
+        lim = new LoadedImage();
+        add(lim, BorderLayout.CENTER);
+        lim.setFocusable(false);
+
+        tags = new Panel();
+        add(tags, BorderLayout.SOUTH);
 
         var bar = new MenuBar();
         setMenuBar(bar);
 
-        var file = new Menu("File");
-        MenuItem i1 = file.add(new MenuItem("New..."));
+        var file = new Menu("Files");
+
+        MenuItem fileNew = file.add(new MenuItem("New..."));
+
         var openShortcut = new MenuShortcut(KeyEvent.VK_O, false);
-        MenuItem i2 = file.add(new MenuItem("Open...", openShortcut));
-        MenuItem i3 = file.add(new MenuItem("Close"));
-        MenuItem i4 = file.add(new MenuItem("-"));
+        MenuItem fileOpen = file.add(new MenuItem("Open...", openShortcut));
+
+        MenuItem fileClose = file.add(new MenuItem("Close"));
+        fileClose.setEnabled(false);
+
+        MenuItem fileSplit = file.add(new MenuItem("-"));
+
         var quitShortcut = new MenuShortcut(KeyEvent.getExtendedKeyCodeForChar('Q'), true);
-        MenuItem i5 = file.add(new MenuItem("Quit...", quitShortcut));
+        MenuItem fileQuit = file.add(new MenuItem("Quit...", quitShortcut));
+
         bar.add(file);
 
-        var edit = new Menu("Edit");
-        MenuItem i6 = edit.add(new MenuItem("Cut"));
-        MenuItem i7 = edit.add(new MenuItem("Copy"));
-        MenuItem i8 = edit.add(new MenuItem("Paste"));
-        MenuItem i9 = edit.add(new MenuItem("-"));
+        var view = new Menu("View");
 
-        var sub = new Menu("Special");
-        var i10 = sub.add(new MenuItem("First"));
-        var i11 = sub.add(new MenuItem("Second"));
-        var i12 = sub.add(new MenuItem("Third"));
-        edit.add(sub);
+        var zinShortcut = new MenuShortcut(KeyEvent.VK_EQUALS, false);
+        var viewZoomIn = view.add(new MenuItem("Zoom in", zinShortcut));
+        viewZoomIn.addActionListener((ae) -> zoomIn());
 
-        debug = new CheckboxMenuItem("Debug");
-        edit.add(debug);
-        test = new CheckboxMenuItem("Test");
-        edit.add(test);
+        var zoutShortcut = new MenuShortcut(KeyEvent.VK_MINUS, false);
+        var viewZoomOut = view.add(new MenuItem("Zoom out", zoutShortcut));
+        viewZoomOut.addActionListener((ae) -> zoomOut());
 
-        bar.add(edit);
+        bar.add(view);
+
+        viewHidden = new CheckboxMenuItem("Hidden");
+        view.add(viewHidden);
+
+        viewDebug = new CheckboxMenuItem("Debug");
+        view.add(viewDebug);
 
         var handler = new MenuHandler();
 
-        i1.addActionListener(handler);
-        i2.addActionListener(handler);
-        i3.addActionListener(handler);
-        i4.addActionListener(handler);
-        i5.addActionListener(handler);
-        i6.addActionListener(handler);
-        i7.addActionListener(handler);
-        i8.addActionListener(handler);
-        i9.addActionListener(handler);
-        i10.addActionListener(handler);
-        i11.addActionListener(handler);
-        i12.addActionListener(handler);
+        fileNew.addActionListener(handler);
+        fileOpen.addActionListener(handler);
+        fileClose.addActionListener(handler);
+        fileSplit.addActionListener(handler);
+        fileQuit.addActionListener(handler);
+        viewZoomIn.addActionListener(handler);
+        viewZoomOut.addActionListener(handler);
 
-        debug.addItemListener(handler);
-        test.addItemListener(handler);
+        viewHidden.addItemListener(handler);
+        viewDebug.addItemListener(handler);
 
-        i5.addActionListener((ae) -> System.exit(0));
+        fileQuit.addActionListener((ae) -> System.exit(0));
 
-        i2.addActionListener((ae) -> onOpen());
+        fileOpen.addActionListener((ae) -> onOpen());
+
+        addKeyListener(this);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -86,8 +106,78 @@ public class App extends Frame {
         });
     }
 
+    private void updateZoom(double delta) {
+        scale += delta;
+
+        showCurrentImage();
+    }
+
+    private void zoomIn() {
+        updateZoom(-0.1);
+    }
+
+    private void zoomOut() {
+        updateZoom(0.1);
+    }
+
+    private void previousImage() {
+        index--;
+
+        if (index < 0) {
+            index = files.size() - 1;
+        }
+
+        showCurrentImage();
+    }
+
+    private void nextImage() {
+        index++;
+
+        if (index >= files.size()) {
+            index = 0;
+        }
+
+        showCurrentImage();
+    }
+
+    private void showCurrentImage() {
+        var file = files.get(index);
+        Image img;
+
+        try {
+            img = ImageIO.read(file);
+        } catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+
+        var w = img.getWidth(null);
+        var h = img.getHeight(null);
+        var scaledImage = img.getScaledInstance((int) (w / scale), (int) (h / scale), Image.SCALE_FAST);
+
+        lim.set(scaledImage);
+        lab.setText(file.getName());
+
+        var pathChunks = file.getAbsolutePath().substring(root.getAbsolutePath().length()).split("/");
+        tags.removeAll();
+
+        for (String pathChunk : pathChunks) {
+            if (pathChunk.isEmpty()) {
+                continue;
+            }
+
+            if (pathChunk.equals(file.getName())) {
+                continue;
+            }
+
+            tags.add(new Button(String.format("[%s]", pathChunk)));
+        }
+
+        setVisible(true);
+    }
+
     public List<File> listFiles(File dir, FileMatcher fileMather) {
-        var files = new ArrayList<File>();
+        var result = new ArrayList<File>();
         var queue = new LinkedList<File>();
         queue.add(dir);
 
@@ -100,31 +190,20 @@ public class App extends Frame {
             var currentDirFiles = Stream.of(currentDir.listFiles())
                     .filter(file -> !file.isDirectory() && fileMather.isMatch(file))
                     .collect(Collectors.toList());
-            files.addAll(currentDirFiles);
+            result.addAll(currentDirFiles);
         }
 
-        return files;
+        return result;
     }
 
-    private String printAll(File dir, FileMatcher matcher, boolean printFiles) {
-        var matchedFiles = listFiles(dir, matcher);
-        var uniqueFiles = new HashSet<String>();
-
-        for (var file : matchedFiles) {
-            if (printFiles) {
-                System.out.println(file.getName());
-            }
-            uniqueFiles.add(file.getName());
-        }
-
-        return String.format("%s: %d -> %d", matcher.getClass().getSimpleName(), matchedFiles.size(), uniqueFiles.size());
+    private List<File> sortFiles(List<File> source) {
+        var result = new ArrayList<File>(source.size());
+        result.addAll(source);
+        result.sort((a, b) -> a.getName().compareTo(b.getName()));
+        return result;
     }
 
     private void onOpen() {
-        var isDebug = debug.getState();
-
-        removeAll();
-
         var dialog = new FileDialog(this, "Select directory", FileDialog.LOAD);
         dialog.setVisible(true);
         var dir = dialog.getDirectory();
@@ -140,98 +219,71 @@ public class App extends Frame {
             return;
         }
 
-        var matchers = new ArrayList<FileMatcher>();
+        root = rootDir;
 
-        matchers.add(new AllFileMatcher());
-        matchers.add(new JpgFileMatcher());
-        matchers.add(new JpegFileMatcher());
-        matchers.add(new PngFileMatcher());
-        matchers.add(new Mp4FileMatcher());
-        matchers.add(new GifFileMatcher());
-        matchers.add(new FileMatcher14());
-        matchers.add(new FileMatcher42());
-        matchers.add(new FileMatcher42All());
-        matchers.add(new FileMatcher86());
-        matchers.add(new FileMatcher86Brackets());
-        matchers.add(new FileMatcher86All());
-        matchers.add(new FileMatcherWp82());
-        matchers.add(new FileMatcherImg4());
-        matchers.add(new InvertedFileMatcherWrapper(new FileMatcher86All()));
-        matchers.add(new InlineFileMatcher("(?!skip).*"));
+        var unsortedFiles = listFiles(rootDir, new AllFileMatcher());
+        var sortedFiles = sortFiles(unsortedFiles);
+        files.addAll(sortedFiles);
 
-        for (var m : matchers) {
-            var result = printAll(rootDir, m, isDebug);
-            if (isDebug) {
-                System.out.println(result);
-            }
-            var newLabel = new Label();
-            newLabel.setText(result);
-            add(newLabel);
-        }
+        showCurrentImage();
 
         setVisible(true);
-    }
-
-    private void transformAll(File dir, FileNormalizer transformator, boolean printFiles) {
-        var files = listFiles(dir, (FileMatcher) transformator);
-        var total = files.size();
-        var counter = 0;
-
-        for (var file : files) {
-            var oldName = file.getName().toLowerCase();
-            var fileTimestamp = transformator.getTimestamp(file);
-            if (fileTimestamp == null) {
-                if (printFiles) {
-                    System.out.printf("%s -> skipped%n", oldName);
-                }
-                continue;
-            }
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-            var fileExtension = oldName.split("\\.")[1];
-            var pureName = fileTimestamp.format(formatter);
-            var newName = pureName + "." + fileExtension;
-            var oldFullName = file.getAbsolutePath();
-
-            if (distinctFiles.containsKey(pureName)) {
-                var index = distinctFiles.get(pureName);
-                newName = pureName + "(" + index + ")" + "." + fileExtension;
-                distinctFiles.put(pureName, index + 1);
-            } else {
-                distinctFiles.put(pureName, 0);
-            }
-
-            if (printFiles) {
-                System.out.printf("%s -> %s%n", oldName, newName);
-            }
-
-            Path source = Paths.get(oldFullName);
-
-            try {
-                Files.move(source, source.resolveSibling(newName));
-                counter++;
-            } catch (IOException ex) {
-                System.out.printf("%s -> %s -> exception%n", oldName, newName);
-            }
-        }
-
-        System.out.printf("%d/%d%n", counter, total);
-        System.out.println(distinctFiles.size());
     }
 
     public static void main(String[] args) {
         var app = new App();
 
-        app.setSize(new Dimension(720, 480));
+        app.setSize(new Dimension(1280, 720));
         app.setTitle("Tart");
+        app.setExtendedState(Frame.MAXIMIZED_BOTH);
         app.setVisible(true);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent ke) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent ke) {
+        var key = ke.getKeyCode();
+
+        var isRenderingNeeded = false;
+
+        switch (key) {
+            case KeyEvent.VK_LEFT:
+                previousImage();
+                isRenderingNeeded = true;
+                break;
+            case KeyEvent.VK_RIGHT:
+                nextImage();
+                isRenderingNeeded = true;
+                break;
+            case KeyEvent.VK_PLUS:
+                zoomIn();
+                isRenderingNeeded = true;
+                break;
+            case KeyEvent.VK_MINUS:
+                zoomOut();
+                isRenderingNeeded = true;
+                break;
+        }
+
+        if (isRenderingNeeded) {
+            showCurrentImage();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent ke) {
+
     }
 
     class MenuHandler implements ActionListener, ItemListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            var isDebug = debug.getState();
+            var isDebug = viewDebug.getState();
 
             var command = ae.getActionCommand();
 
