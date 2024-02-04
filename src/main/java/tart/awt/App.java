@@ -20,7 +20,7 @@ public class App extends Frame implements KeyListener, ItemListener {
     private final Panel header;
     private final Panel filters;
     private final Panel tags;
-    private final LoadedImage lim;
+    private final LoadedImage image;
 
     private final CheckboxMenuItem viewHidden;
     private final CheckboxMenuItem viewDebug;
@@ -39,12 +39,15 @@ public class App extends Frame implements KeyListener, ItemListener {
         filterYear = new Choice();
         var minYear = 2012;
         var maxYear = 2024;
+
         for (int i = minYear; i <= maxYear; i++) {
             filterYear.add(String.format("%d", i));
         }
+
         filterMonth = new Choice();
         var minMonth = 1;
         var maxMonth = 12;
+
         for (int i = minMonth; i <= maxMonth; i++) {
             filterMonth.add(String.format("%d", i));
         }
@@ -63,9 +66,17 @@ public class App extends Frame implements KeyListener, ItemListener {
         header.add(tags);
         add(header, BorderLayout.NORTH);
 
-        lim = new LoadedImage();
-        add(lim, BorderLayout.CENTER);
-        lim.setFocusable(false);
+        image = new LoadedImage();
+        add(image, BorderLayout.CENTER);
+//        image.setFocusable(false);
+
+        var next = new Button(">");
+        next.addActionListener((ae) -> nextImage());
+        add(next, BorderLayout.EAST);
+
+        var previous = new Button("<");
+        previous.addActionListener((ae) -> previousImage());
+        add(previous, BorderLayout.WEST);
 
         var bar = new MenuBar();
         setMenuBar(bar);
@@ -196,7 +207,7 @@ public class App extends Frame implements KeyListener, ItemListener {
         var h = img.getHeight(null);
         var scaledImage = img.getScaledInstance((int) (w / scale), (int) (h / scale), Image.SCALE_FAST);
 
-        lim.set(scaledImage);
+        image.set(scaledImage);
 
         var pathChunks = file.getAbsolutePath().substring(scanner.getRoot().getAbsolutePath().length()).split("/");
         tags.removeAll();
