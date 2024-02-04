@@ -1,21 +1,17 @@
 package tart.awt;
 
-import tart.core.matcher.FileMatcher;
-import tart.core.matcher.AllFileMatcher;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.*;
 import javax.imageio.ImageIO;
 import tart.awt.components.LoadedImage;
+import tart.core.Scanner;
 
-public class App extends Frame implements KeyListener {
+public class App extends Frame implements KeyListener, ItemListener {
 
-    private File root;
+    private final Scanner scanner;
     private File currentFile;
 
     private final Choice filterYear;
@@ -31,14 +27,14 @@ public class App extends Frame implements KeyListener {
 
     private double scale = 3;
 
-    private final ArrayList<File> files = new ArrayList<>();
-    private int index = 0;
-
     public App() {
+        scanner = new Scanner();
+
         setLayout(new BorderLayout());
         setFocusable(true);
 
         header = new Panel(new GridLayout(0, 1));
+//        header.addKeyListener(this);
 
         filterYear = new Choice();
         var minYear = 2012;
@@ -151,29 +147,21 @@ public class App extends Frame implements KeyListener {
     }
 
     private void previousImage() {
-        index--;
-
-        if (index < 0) {
-            index = files.size() - 1;
-        }
+        scanner.gotoPreviousFile();
 
         showCurrentImage();
     }
 
     private void nextImage() {
-        index++;
-
-        if (index >= files.size()) {
-            index = 0;
-        }
+        scanner.gotoNextFile();
 
         showCurrentImage();
     }
 
     private void updateTitle() {
 
-        if (root != null) {
-            var rootDirs = root.getAbsolutePath().split("/");
+        if (scanner.getRoot() != null) {
+            var rootDirs = scanner.getRoot().getAbsolutePath().split("/");
             var endDir = rootDirs[rootDirs.length - 1];
 
             setTitle(String.format("%s - Tart ", endDir));
@@ -192,7 +180,7 @@ public class App extends Frame implements KeyListener {
     }
 
     private void showCurrentImage() {
-        var file = files.get(index);
+        var file = scanner.getFile();
         Image img;
 
         try {
@@ -210,7 +198,7 @@ public class App extends Frame implements KeyListener {
 
         lim.set(scaledImage);
 
-        var pathChunks = file.getAbsolutePath().substring(root.getAbsolutePath().length()).split("/");
+        var pathChunks = file.getAbsolutePath().substring(scanner.getRoot().getAbsolutePath().length()).split("/");
         tags.removeAll();
         // TODO extract panel leading label
         tags.add(new Label("Tags:"));
@@ -232,50 +220,12 @@ public class App extends Frame implements KeyListener {
         setVisible(true);
     }
 
-    public List<File> listFiles(File dir, FileMatcher fileMather) {
-        var result = new ArrayList<File>();
-        var queue = new LinkedList<File>();
-        queue.add(dir);
-
-        while (!queue.isEmpty()) {
-            var currentDir = queue.poll();
-            var dirs = Stream.of(currentDir.listFiles())
-                    .filter(file -> file.isDirectory())
-                    .collect(Collectors.toList());
-            queue.addAll(dirs);
-            var currentDirFiles = Stream.of(currentDir.listFiles())
-                    .filter(file -> !file.isDirectory() && fileMather.isMatch(file))
-                    .collect(Collectors.toList());
-            result.addAll(currentDirFiles);
-        }
-
-        return result;
-    }
-
-    private List<File> sortFiles(List<File> source) {
-        var result = new ArrayList<File>(source.size());
-        result.addAll(source);
-        result.sort((a, b) -> a.getName().compareTo(b.getName()));
-        return result;
-    }
-
     private void onOpen() {
         var dialog = new FileDialog(this, "Select directory", FileDialog.LOAD);
         dialog.setVisible(true);
         var dir = dialog.getDirectory();
 
-        var rootDir = new File(dir);
-
-        if (!rootDir.exists()) {
-            System.out.printf("%s not exists%n", dir);
-            return;
-        }
-
-        root = rootDir;
-
-        var unsortedFiles = listFiles(rootDir, new AllFileMatcher());
-        var sortedFiles = sortFiles(unsortedFiles);
-        files.addAll(sortedFiles);
+        scanner.scan(dir);
 
         updateTitle();
         showCurrentImage();
@@ -329,6 +279,11 @@ public class App extends Frame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent ke) {
+
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent ie) {
 
     }
 
