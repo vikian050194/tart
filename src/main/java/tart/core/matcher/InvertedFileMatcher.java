@@ -1,13 +1,12 @@
-package tart.core.matcher.wrapper;
+package tart.core.matcher;
 
 import java.io.File;
-import tart.core.matcher.FileMatcher;
 
-public class InvertedFileMatcherWrapper extends FileMatcher {
+public class InvertedFileMatcher extends FileMatcher {
     private final FileMatcher wrappedMatcher;
     
     
-    public InvertedFileMatcherWrapper(FileMatcher matcher) {
+    public InvertedFileMatcher(FileMatcher matcher) {
         super(".*");
         this.wrappedMatcher = matcher;
     }
