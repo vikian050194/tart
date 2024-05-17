@@ -12,7 +12,6 @@ import tart.core.Scanner;
 public class App extends Frame implements KeyListener, ItemListener {
 
     private final Scanner scanner;
-    private File currentFile;
 
     private final Choice filterYear;
     private final Choice filterMonth;
@@ -177,8 +176,8 @@ public class App extends Frame implements KeyListener, ItemListener {
 
             setTitle(String.format("%s - Tart ", endDir));
 
-            if (currentFile != null) {
-                var fileName = currentFile.getName();
+            if (scanner.getFile() != null) {
+                var fileName = scanner.getFile().getName();
 
                 setTitle(String.format("%s - %s - Tart", fileName, endDir));
             }
@@ -200,8 +199,6 @@ public class App extends Frame implements KeyListener, ItemListener {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
-
-        currentFile = file;
 
         var w = img.getWidth(null);
         var h = img.getHeight(null);
