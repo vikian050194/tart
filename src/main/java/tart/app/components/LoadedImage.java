@@ -1,4 +1,4 @@
-package tart.awt.components;
+package tart.app.components;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
