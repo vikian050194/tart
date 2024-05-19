@@ -1,15 +1,33 @@
 package tart.app;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import tart.core.Scanner;
 
-public class App {
+public final class App implements ActionListener {
 
-//    private final Scanner scanner;
-//
-//    private final Choice filterYear;
-//    private final Choice filterMonth;
+    private final Scanner scanner;
+
+    private final JFrame frame;
+
+    private JLabel displayPhoto;
+
+    private final JMenuBar bar;
+    private final JComboBox<String> filterYear; // TODO: rename to comboYear
+    private final JComboBox<String> filterMonth; // TODO: rename to comboMonth
 //
 //    private final Panel header;
 //    private final Panel filters;
@@ -29,22 +47,6 @@ public class App {
 //
 //        header = new Panel(new GridLayout(0, 1));
 ////        header.addKeyListener(this);
-//
-//        filterYear = new Choice();
-//        var minYear = 2012;
-//        var maxYear = 2024;
-//
-//        for (int i = minYear; i <= maxYear; i++) {
-//            filterYear.add(String.format("%d", i));
-//        }
-//
-//        filterMonth = new Choice();
-//        var minMonth = 1;
-//        var maxMonth = 12;
-//
-//        for (int i = minMonth; i <= maxMonth; i++) {
-//            filterMonth.add(String.format("%d", i));
-//        }
 //
 //        // TODO fix focus issue
 //        filters = new Panel(new FlowLayout(FlowLayout.LEFT, 4, 4));
@@ -310,23 +312,97 @@ public class App {
 //            repaint();
 //        }
 //    }
-    
+
     public App() {
-        String title = "A Simple Swing Application";
+        String title = "Tart";
         String msg = "Hello, World!";
 
-        JFrame frame = new JFrame(title);
+        scanner = new Scanner();
 
-        frame.setSize(300, 100);
+        bar = new JMenuBar();
+
+        filterYear = new JComboBox<>();
+        filterMonth = new JComboBox<>();
+
+        makeFileMenu();
+
+        frame = new JFrame(title);
+
+        frame.setLayout(new BorderLayout());
+
+        frame.setSize(720, 480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel label = new JLabel(msg);
+        frame.setJMenuBar(bar);
 
-        frame.add(label);
+        displayPhoto = new JLabel(msg);
+
+        frame.add(displayPhoto);
         frame.setVisible(true);
+    }
+
+    private void makeFileMenu() {
+        var file = new JMenu("File");
+
+        file.setMnemonic(KeyEvent.VK_F);
+        var open = file.add(new JMenuItem("Open", KeyEvent.VK_O));
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+        open.addActionListener(this);
+        var close = file.add(new JMenuItem("Close", KeyEvent.VK_C));
+        close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
+        close.addActionListener(this);
+        var save = file.add(new JMenuItem("Save", KeyEvent.VK_S));
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+        save.addActionListener(this);
+        var exit = file.add(new JMenuItem("Exit", KeyEvent.VK_E));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK));
+        exit.addActionListener(this);
+
+        bar.add(file);
+    }
+
+    private void updateComboYear(String[] years) {
+        filterYear.removeAllItems();
+
+        for (String year : years) {
+            filterYear.addItem(year);
+        }
+    }
+
+    private void updateComboMonth(String[] months) {
+        filterMonth.removeAllItems();
+
+        for (String month : months) {
+            filterMonth.addItem(month);
+        }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(App::new);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        var command = ae.getActionCommand();
+
+        if (command.equals("Exit")) {
+            System.exit(0);
+        }
+
+        if (command.equals("Open")) {
+            var fc = new JFileChooser();
+            fc.showOpenDialog(frame);
+            scanner.scan(fc.getSelectedFile().getParent());
+            frame.setTitle(String.format("%d files", scanner.getFilesCount()));
+
+            var file = scanner.getFile();
+            displayPhoto.setIcon(new ImageIcon(file.getAbsolutePath(), file.getName()));
+            displayPhoto.setHorizontalAlignment(JLabel.CENTER);
+            displayPhoto.setText(file.getName());
+
+            return;
+        }
+
+        frame.setTitle(ae.getActionCommand());
     }
 }

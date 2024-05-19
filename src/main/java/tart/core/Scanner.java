@@ -16,7 +16,7 @@ public class Scanner {
     private final ArrayList<File> files = new ArrayList<>();
     private int index = 0;
 
-    public List<File> listFiles(File dir, FileMatcher fileMather) {
+    private List<File> listFiles(File dir, FileMatcher fileMather) {
         var result = new ArrayList<File>();
         var queue = new LinkedList<File>();
         queue.add(dir);
@@ -43,11 +43,20 @@ public class Scanner {
         return result;
     }
 
+    /**
+     *
+     * @param dir directories tree traverse start
+     */
     public void scan(String dir) {
         var rootDir = new File(dir);
 
         if (!rootDir.exists()) {
-            System.out.printf("%s not exists%n", dir);
+            System.out.printf("%s is not found%n", dir);
+            return;
+        }
+
+        if (rootDir.isFile()) {
+            System.out.printf("%s is not directory%n", dir);
             return;
         }
 
@@ -83,5 +92,9 @@ public class Scanner {
 
     public File getRoot() {
         return root;
+    }
+
+    public int getFilesCount() {
+        return files.size();
     }
 }

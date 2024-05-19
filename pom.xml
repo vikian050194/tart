@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <exec.mainClass>tart.awt.App</exec.mainClass>
+        <exec.mainClass>tart.app.App</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>
@@ -30,7 +30,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>tart.awt.App</mainClass>
+                            <mainClass>tart.app.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
