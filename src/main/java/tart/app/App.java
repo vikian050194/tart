@@ -23,7 +23,11 @@ public final class App {
     private final JComboBox<String> filterMonth; // TODO: rename to comboMonth
     private final JComboBox<String> filterDay;
 
-    class KeyHandler implements KeyListener {
+    private boolean skipYear = false;
+    private boolean skipMonth = false;
+    private boolean skipDay = false;
+
+    private final class KeyHandler implements KeyListener {
 
         @Override
         public void keyTyped(KeyEvent ke) {
@@ -79,12 +83,11 @@ public final class App {
                 scanner.scan(fc.getSelectedFile().getAbsolutePath());
 
                 updateTitle();
-
-                if (scanner.isYearsUpdated()) {
-                    updateComboYear(scanner.getYears());
-                }
-
                 showCurrentImage();
+
+                updateComboYear(scanner.getYears());
+                updateComboMonth(scanner.getMonths());
+                updateComboDay(scanner.getDays());
             } else {
 // TODO show message
             }
@@ -165,13 +168,17 @@ public final class App {
                 return;
             }
 
+            if (skipYear) {
+                skipYear = false;
+                return;
+            }
+
             var mask = (String) ae.getItem();
             scanner.setYearFilter(mask);
 
 //            if (scanner.isYearsUpdated()) {
 //                updateComboYear(scanner.getYears());
 //            }
-
             if (scanner.isMonthsUpdated()) {
                 updateComboMonth(scanner.getMonths());
             }
@@ -192,6 +199,11 @@ public final class App {
                 return;
             }
 
+            if (skipMonth) {
+                skipMonth = false;
+                return;
+            }
+
             var mask = (String) ae.getItem();
             scanner.setMonthFilter(mask);
 
@@ -202,7 +214,6 @@ public final class App {
 //            if (scanner.isMonthsUpdated()) {
 //                updateComboMonth(scanner.getMonths());
 //            }
-
             if (scanner.isDaysUpdated()) {
                 updateComboDay(scanner.getDays());
             }
@@ -216,6 +227,11 @@ public final class App {
             }
 
             if (!scanner.isReady()) {
+                return;
+            }
+
+            if (skipDay) {
+                skipDay = false;
                 return;
             }
 
@@ -233,7 +249,6 @@ public final class App {
 //            if (scanner.isDaysUpdated()) {
 //                updateComboDay(scanner.getDays());
 //            }
-
             updateTitle();
             showCurrentImage();
         });
@@ -323,14 +338,17 @@ public final class App {
     }
 
     private void updateComboYear(String[] years) {
+        skipYear = true;
         updateComboBox(years, filterYear);
     }
 
     private void updateComboMonth(String[] months) {
+        skipMonth = true;
         updateComboBox(months, filterMonth);
     }
 
     private void updateComboDay(String[] days) {
+        skipDay = true;
         updateComboBox(days, filterDay);
     }
 
