@@ -60,17 +60,17 @@ public class Scanner {
         return result;
     }
 
-    private void filter() {
+    private void filter(Filters skipFilter) {
         files.clear();
         var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
         var unsortedFiles = listFiles(root, new InlineFileMatcher(stringPattern));
         var sortedFiles = sortFiles(unsortedFiles);
         files.addAll(sortedFiles);
 
-        updatePossibleValues();
+        updatePossibleValues(skipFilter);
     }
 
-    private void updatePossibleValues() {
+    private void updatePossibleValues(Filters skipFilter) {
         var prevYears = new String[ys.size()];
         ys.toArray(prevYears);
         var prevMonths = new String[ms.size()];
@@ -78,9 +78,9 @@ public class Scanner {
         var prevDays = new String[ds.size()];
         ds.toArray(prevDays);
 
-        ys.clear();
-        ms.clear();
-        ds.clear();
+        ArrayList<String> newYears = new ArrayList<>();
+        ArrayList<String> newMonths = new ArrayList<>();
+        ArrayList<String> newDays = new ArrayList<>();
 
         for (File f : files) {
             var year = f.getName().substring(0, 4);
@@ -99,33 +99,45 @@ public class Scanner {
                 continue;
             }
 
-            if (!ys.contains(year)) {
-                ys.add(year);
+            if (!newYears.contains(year)) {
+                newYears.add(year);
             }
 
-            if (!ms.contains(month)) {
-                ms.add(month);
+            if (!newMonths.contains(month)) {
+                newMonths.add(month);
             }
 
-            if (!ds.contains(day)) {
-                ds.add(day);
+            if (!newDays.contains(day)) {
+                newDays.add(day);
             }
         }
 
-        ys.sort((a, b) -> a.compareTo(b));
-        ms.sort((a, b) -> a.compareTo(b));
-        ds.sort((a, b) -> a.compareTo(b));
+        if (skipFilter != Filters.YEAR) {
+            ys.clear();
+            ys.addAll(newYears);
+            ys.sort((a, b) -> a.compareTo(b));
+            var years = new String[ys.size()];
+            ys.toArray(years);
+            isYearsUpdated = isYearsUpdated || !Arrays.equals(prevYears, years);
+        }
 
-        var years = new String[ys.size()];
-        ys.toArray(years);
-        var months = new String[ms.size()];
-        ms.toArray(months);
-        var days = new String[ds.size()];
-        ds.toArray(days);
+        if (skipFilter != Filters.MONTH) {
+            ms.clear();
+            ms.addAll(newMonths);
+            ms.sort((a, b) -> a.compareTo(b));
+            var months = new String[ms.size()];
+            ms.toArray(months);
+            isMonthsUpdated = isMonthsUpdated || !Arrays.equals(prevMonths, months);
+        }
 
-        isYearsUpdated = isYearsUpdated || !Arrays.equals(prevYears, years);
-        isMonthsUpdated = isMonthsUpdated || !Arrays.equals(prevMonths, months);
-        isDaysUpdated = isDaysUpdated || !Arrays.equals(prevDays, days);
+        if (skipFilter != Filters.DAY) {
+            ds.clear();
+            ds.addAll(newDays);
+            ds.sort((a, b) -> a.compareTo(b));
+            var days = new String[ds.size()];
+            ds.toArray(days);
+            isDaysUpdated = isDaysUpdated || !Arrays.equals(prevDays, days);
+        }
     }
 
     /**
@@ -147,7 +159,7 @@ public class Scanner {
 
         root = rootDir;
 
-        filter();
+        filter(Filters.NONE);
 
 //        updatePossibleValues();
 //        yearsUpdated();
@@ -203,11 +215,11 @@ public class Scanner {
             yearMask = mask;
         }
 
-        filter();
+        filter(Filters.YEAR);
     }
 
     public void setMonthFilter(String mask) {
-        if (mask.equals(monthMask) || mask.equals("ALL")) {
+        if (mask.equals(monthMask)) {
             return;
         }
 
@@ -221,7 +233,7 @@ public class Scanner {
             monthMask = mask;
         }
 
-        filter();
+        filter(Filters.MONTH);
     }
 
     public void setDayFilter(String mask) {
@@ -240,7 +252,7 @@ public class Scanner {
 
         }
 
-        filter();
+        filter(Filters.DAY);
     }
 
     public String[] getYears() {

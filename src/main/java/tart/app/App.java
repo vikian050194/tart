@@ -157,67 +157,85 @@ public final class App {
         updateComboDay(new String[0]);
 
         filterYear.addItemListener((ae) -> {
-            if (scanner.isReady()) {
-                var mask = (String) ae.getItem();
-                scanner.setYearFilter(mask);
-
-                if (scanner.isYearsUpdated()) {
-                    updateComboYear(scanner.getYears());
-                }
-
-                if (scanner.isMonthsUpdated()) {
-                    updateComboMonth(scanner.getMonths());
-                }
-
-                if (scanner.isDaysUpdated()) {
-                    updateComboDay(scanner.getDays());
-                }
-
-                updateTitle();
-                showCurrentImage();
+            if (ae.getStateChange() != ItemEvent.SELECTED) {
+                return;
             }
+
+            if (!scanner.isReady()) {
+                return;
+            }
+
+            var mask = (String) ae.getItem();
+            scanner.setYearFilter(mask);
+
+//            if (scanner.isYearsUpdated()) {
+//                updateComboYear(scanner.getYears());
+//            }
+
+            if (scanner.isMonthsUpdated()) {
+                updateComboMonth(scanner.getMonths());
+            }
+
+            if (scanner.isDaysUpdated()) {
+                updateComboDay(scanner.getDays());
+            }
+
+            updateTitle();
+            showCurrentImage();
         });
         filterMonth.addItemListener((ae) -> {
-            if (scanner.isReady()) {
-                var mask = (String) ae.getItem();
-                scanner.setMonthFilter(mask);
-
-                if (scanner.isYearsUpdated()) {
-                    updateComboYear(scanner.getYears());
-                }
-
-                if (scanner.isMonthsUpdated()) {
-                    updateComboMonth(scanner.getMonths());
-                }
-
-                if (scanner.isDaysUpdated()) {
-                    updateComboDay(scanner.getDays());
-                }
-
-                updateTitle();
-                showCurrentImage();
+            if (ae.getStateChange() != ItemEvent.SELECTED) {
+                return;
             }
+
+            if (!scanner.isReady()) {
+                return;
+            }
+
+            var mask = (String) ae.getItem();
+            scanner.setMonthFilter(mask);
+
+            if (scanner.isYearsUpdated()) {
+                updateComboYear(scanner.getYears());
+            }
+
+//            if (scanner.isMonthsUpdated()) {
+//                updateComboMonth(scanner.getMonths());
+//            }
+
+            if (scanner.isDaysUpdated()) {
+                updateComboDay(scanner.getDays());
+            }
+
+            updateTitle();
+            showCurrentImage();
         });
         filterDay.addItemListener((ae) -> {
-            if (scanner.isReady()) {
-                var mask = (String) ae.getItem();
-                scanner.setDayFilter(mask);
-
-                if (scanner.isYearsUpdated()) {
-                    updateComboYear(scanner.getYears());
-                }
-
-                if (scanner.isMonthsUpdated()) {
-                    updateComboMonth(scanner.getMonths());
-                }
-
-                if (scanner.isDaysUpdated()) {
-                    updateComboDay(scanner.getDays());
-                }
-
-                updateTitle();
-                showCurrentImage();
+            if (ae.getStateChange() != ItemEvent.SELECTED) {
+                return;
             }
+
+            if (!scanner.isReady()) {
+                return;
+            }
+
+            var mask = (String) ae.getItem();
+            scanner.setDayFilter(mask);
+
+            if (scanner.isYearsUpdated()) {
+                updateComboYear(scanner.getYears());
+            }
+
+            if (scanner.isMonthsUpdated()) {
+                updateComboMonth(scanner.getMonths());
+            }
+
+//            if (scanner.isDaysUpdated()) {
+//                updateComboDay(scanner.getDays());
+//            }
+
+            updateTitle();
+            showCurrentImage();
         });
 
         makeFileMenu(menuHandler);
