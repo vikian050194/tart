@@ -19,9 +19,14 @@ public final class App {
 
     private final JMenuBar bar;
 
-    private final JComboBox<String> filterYear; // TODO: rename to comboYear
-    private final JComboBox<String> filterMonth; // TODO: rename to comboMonth
-    private final JComboBox<String> filterDay;
+    private final JPanel header;
+    private final JPanel yearsFilterPanel;
+    private final JPanel monthsFilterPanel;
+    private final JPanel daysFilterPanel;
+
+    private final ActionListener yearActionLisener;
+    private final ActionListener monthActionLisener;
+    private final ActionListener dayActionLisener;
 
     private boolean skipYear = false;
     private boolean skipMonth = false;
@@ -138,32 +143,27 @@ public final class App {
 
         var filtersLayout = new FlowLayout();
         filtersLayout.setAlignment(FlowLayout.LEFT);
-        var filters = new JPanel(filtersLayout);
 
-        filterYear = new JComboBox<>();
-        filterMonth = new JComboBox<>();
-        filterDay = new JComboBox<>();
+        var headerLayout = new GridLayout(3, 1);
 
-        filterYear.setFocusable(false); // TODO fix focus issue
-        filterMonth.setFocusable(false);
-        filterDay.setFocusable(false);
+        header = new JPanel(headerLayout);
 
-        filters.add(new JLabel("Year:"));
-        filters.add(filterYear);
-        filters.add(new JLabel("Month:"));
-        filters.add(filterMonth);
-        filters.add(new JLabel("Day:"));
-        filters.add(filterDay);
+        yearsFilterPanel = new JPanel(filtersLayout);
+        monthsFilterPanel = new JPanel(filtersLayout);
+        daysFilterPanel = new JPanel(filtersLayout);
+
+        yearsFilterPanel.add(new JLabel("Year:")); // TODO add label somehow each time or do not remove it
+        monthsFilterPanel.add(new JLabel("Month:"));
+        daysFilterPanel.add(new JLabel("Day:"));
+        header.add(yearsFilterPanel);
+        header.add(monthsFilterPanel);
+        header.add(daysFilterPanel);
 
         updateComboYear(new String[0]);
         updateComboMonth(new String[0]);
         updateComboDay(new String[0]);
 
-        filterYear.addItemListener((ae) -> {
-            if (ae.getStateChange() != ItemEvent.SELECTED) {
-                return;
-            }
-
+        yearActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
             }
@@ -173,7 +173,7 @@ public final class App {
                 return;
             }
 
-            var mask = (String) ae.getItem();
+            var mask = (String) ae.getActionCommand();
             scanner.setYearFilter(mask);
 
 //            if (scanner.isYearsUpdated()) {
@@ -189,12 +189,8 @@ public final class App {
 
             updateTitle();
             showCurrentImage();
-        });
-        filterMonth.addItemListener((ae) -> {
-            if (ae.getStateChange() != ItemEvent.SELECTED) {
-                return;
-            }
-
+        };
+        monthActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
             }
@@ -204,7 +200,7 @@ public final class App {
                 return;
             }
 
-            var mask = (String) ae.getItem();
+            var mask = (String) ae.getActionCommand();
             scanner.setMonthFilter(mask);
 
             if (scanner.isYearsUpdated()) {
@@ -220,12 +216,8 @@ public final class App {
 
             updateTitle();
             showCurrentImage();
-        });
-        filterDay.addItemListener((ae) -> {
-            if (ae.getStateChange() != ItemEvent.SELECTED) {
-                return;
-            }
-
+        };
+        dayActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
             }
@@ -235,7 +227,7 @@ public final class App {
                 return;
             }
 
-            var mask = (String) ae.getItem();
+            var mask = (String) ae.getActionCommand();
             scanner.setDayFilter(mask);
 
             if (scanner.isYearsUpdated()) {
@@ -251,7 +243,7 @@ public final class App {
 //            }
             updateTitle();
             showCurrentImage();
-        });
+        };
 
         makeFileMenu(menuHandler);
         makeViewMenu(menuHandler);
@@ -270,7 +262,7 @@ public final class App {
         image = new JLabel();
 
         frame.add(image, BorderLayout.CENTER);
-        frame.add(filters, BorderLayout.NORTH);
+        frame.add(header, BorderLayout.NORTH);
 
         frame.setVisible(true);
     }
@@ -317,39 +309,35 @@ public final class App {
         bar.add(view);
     }
 
-    private void updateComboBox(String[] values, JComboBox<String> comboBox) {
-        var currentValue = (String) comboBox.getSelectedItem();
+    private void updateFilters(String[] values, ActionListener handler, JPanel container) {
+        container.removeAll();
 
-        comboBox.removeAllItems();
-
-        comboBox.addItem("ALL");
+        var all = new JButton("ALL");
+        all.setFocusable(false);
+        all.addActionListener(handler);
+        container.add(all);
 
         for (String value : values) {
-            comboBox.addItem(value);
-        }
-
-        for (int i = 0; i < comboBox.getItemCount(); i++) {
-            var item = comboBox.getItemAt(i);
-
-            if (item.equals(currentValue)) {
-                comboBox.setSelectedIndex(i);
-            }
+            var newButton = new JButton(value);
+            newButton.setFocusable(false);
+            newButton.addActionListener(handler);
+            container.add(newButton);
         }
     }
 
     private void updateComboYear(String[] years) {
         skipYear = true;
-        updateComboBox(years, filterYear);
+        updateFilters(years, yearActionLisener, yearsFilterPanel);
     }
 
     private void updateComboMonth(String[] months) {
         skipMonth = true;
-        updateComboBox(months, filterMonth);
+        updateFilters(months, monthActionLisener, monthsFilterPanel);
     }
 
     private void updateComboDay(String[] days) {
         skipDay = true;
-        updateComboBox(days, filterDay);
+        updateFilters(days, dayActionLisener, daysFilterPanel);
     }
 
     public static void main(String[] args) {
