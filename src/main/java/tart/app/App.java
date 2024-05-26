@@ -28,10 +28,6 @@ public final class App {
     private final ActionListener monthActionLisener;
     private final ActionListener dayActionLisener;
 
-    private boolean skipYear = false;
-    private boolean skipMonth = false;
-    private boolean skipDay = false;
-
     private final class KeyHandler implements KeyListener {
 
         @Override
@@ -155,6 +151,7 @@ public final class App {
         yearsFilterPanel.add(new JLabel("Year:")); // TODO add label somehow each time or do not remove it
         monthsFilterPanel.add(new JLabel("Month:"));
         daysFilterPanel.add(new JLabel("Day:"));
+
         header.add(yearsFilterPanel);
         header.add(monthsFilterPanel);
         header.add(daysFilterPanel);
@@ -165,11 +162,6 @@ public final class App {
 
         yearActionLisener = (ae) -> {
             if (!scanner.isReady()) {
-                return;
-            }
-
-            if (skipYear) {
-                skipYear = false;
                 return;
             }
 
@@ -195,11 +187,6 @@ public final class App {
                 return;
             }
 
-            if (skipMonth) {
-                skipMonth = false;
-                return;
-            }
-
             var mask = (String) ae.getActionCommand();
             scanner.setMonthFilter(mask);
 
@@ -219,11 +206,6 @@ public final class App {
         };
         dayActionLisener = (ae) -> {
             if (!scanner.isReady()) {
-                return;
-            }
-
-            if (skipDay) {
-                skipDay = false;
                 return;
             }
 
@@ -323,20 +305,19 @@ public final class App {
             newButton.addActionListener(handler);
             container.add(newButton);
         }
+
+        container.updateUI();
     }
 
     private void updateComboYear(String[] years) {
-        skipYear = true;
         updateFilters(years, yearActionLisener, yearsFilterPanel);
     }
 
     private void updateComboMonth(String[] months) {
-        skipMonth = true;
         updateFilters(months, monthActionLisener, monthsFilterPanel);
     }
 
     private void updateComboDay(String[] days) {
-        skipDay = true;
         updateFilters(days, dayActionLisener, daysFilterPanel);
     }
 
