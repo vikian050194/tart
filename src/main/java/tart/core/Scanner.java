@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import tart.core.matcher.AllFileMatcher;
 import tart.core.matcher.FileMatcher;
 import tart.core.matcher.InlineFileMatcher;
 
@@ -15,6 +16,7 @@ public class Scanner {
     private File root;
 
     private final ArrayList<File> files = new ArrayList<>();
+    private final ArrayList<File> filFiles = new ArrayList<>();
 
     private final ArrayList<String> ys = new ArrayList<>();
     private final ArrayList<String> ms = new ArrayList<>();
@@ -53,19 +55,12 @@ public class Scanner {
         return result;
     }
 
-    private List<File> sortFiles(List<File> source) {
-        var result = new ArrayList<File>(source.size());
-        result.addAll(source);
-        result.sort((a, b) -> a.getName().compareTo(b.getName()));
-        return result;
-    }
-
     private void filter(Filters skipFilter) {
-        files.clear();
+        filFiles.clear();
         var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
-        var unsortedFiles = listFiles(root, new InlineFileMatcher(stringPattern));
-        var sortedFiles = sortFiles(unsortedFiles);
-        files.addAll(sortedFiles);
+        var mather = new InlineFileMatcher(stringPattern);
+        var result = files.stream().filter((f) -> mather.isMatch(f)).sorted((a, b) -> a.getName().compareTo(b.getName()));
+        filFiles.addAll(result.toList());
 
         updatePossibleValues(skipFilter);
     }
@@ -82,7 +77,7 @@ public class Scanner {
         ArrayList<String> newMonths = new ArrayList<>();
         ArrayList<String> newDays = new ArrayList<>();
 
-        for (File f : files) {
+        for (File f : filFiles) {
             var year = f.getName().substring(0, 4);
             var month = f.getName().substring(4, 6);
             var day = f.getName().substring(6, 8);
@@ -159,13 +154,11 @@ public class Scanner {
 
         root = rootDir;
 
-        filter(Filters.NONE);
+        files.clear();
+        var result = listFiles(root, new AllFileMatcher());
+        files.addAll(result.stream().toList());
 
-//        updatePossibleValues();
-//        yearsUpdated();
-//        unsortedFiles = listFiles(rootDir, new AllFileMatcher());
-//        sortedFiles = sortFiles(unsortedFiles);
-//        files.addAll(sortedFiles);
+        filter(Filters.NONE);
     }
 
     public boolean isReady() {
@@ -176,20 +169,20 @@ public class Scanner {
         index--;
 
         if (index < 0) {
-            index = files.size() - 1;
+            index = filFiles.size() - 1;
         }
     }
 
     public void gotoNextFile() {
         index++;
 
-        if (index >= files.size()) {
+        if (index >= filFiles.size()) {
             index = 0;
         }
     }
 
     public File getFile() {
-        return files.get(index);
+        return filFiles.get(index);
     }
 
     public File getRoot() {
@@ -197,7 +190,7 @@ public class Scanner {
     }
 
     public int getFilesCount() {
-        return files.size();
+        return filFiles.size();
     }
 
     public void setYearFilter(String mask) {
@@ -292,18 +285,6 @@ public class Scanner {
 
     public boolean isDaysUpdated() {
         return isDaysUpdated;
-    }
-
-    private void yearsUpdated() {
-        isYearsUpdated = true;
-    }
-
-    private void monthsUpdated() {
-        isMonthsUpdated = true;
-    }
-
-    private void daysUpdated() {
-        isDaysUpdated = true;
     }
 
     private void yearsReviewed() {

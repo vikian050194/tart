@@ -3,6 +3,7 @@ package tart.app;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import tart.app.components.ButtonFilter;
 import tart.core.Scanner;
 
 public final class App {
@@ -20,9 +21,9 @@ public final class App {
     private final JMenuBar bar;
 
     private final JPanel header;
-    private final JPanel yearsFilterPanel;
-    private final JPanel monthsFilterPanel;
-    private final JPanel daysFilterPanel;
+    private final ButtonFilter yearsFilter;
+    private final ButtonFilter monthsFilter;
+    private final ButtonFilter daysFilter;
 
     private final ActionListener yearActionLisener;
     private final ActionListener monthActionLisener;
@@ -140,26 +141,6 @@ public final class App {
         var filtersLayout = new FlowLayout();
         filtersLayout.setAlignment(FlowLayout.LEFT);
 
-        var headerLayout = new GridLayout(3, 1);
-
-        header = new JPanel(headerLayout);
-
-        yearsFilterPanel = new JPanel(filtersLayout);
-        monthsFilterPanel = new JPanel(filtersLayout);
-        daysFilterPanel = new JPanel(filtersLayout);
-
-        yearsFilterPanel.add(new JLabel("Year:")); // TODO add label somehow each time or do not remove it
-        monthsFilterPanel.add(new JLabel("Month:"));
-        daysFilterPanel.add(new JLabel("Day:"));
-
-        header.add(yearsFilterPanel);
-        header.add(monthsFilterPanel);
-        header.add(daysFilterPanel);
-
-        updateComboYear(new String[0]);
-        updateComboMonth(new String[0]);
-        updateComboDay(new String[0]);
-
         yearActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
@@ -227,6 +208,22 @@ public final class App {
             showCurrentImage();
         };
 
+        var headerLayout = new GridLayout(3, 1);
+
+        header = new JPanel(headerLayout);
+
+        yearsFilter = new ButtonFilter("Years", yearActionLisener);
+        monthsFilter = new ButtonFilter("Months", monthActionLisener);
+        daysFilter = new ButtonFilter("Days", dayActionLisener);
+
+        header.add(yearsFilter);
+        header.add(monthsFilter);
+        header.add(daysFilter);
+
+        updateComboYear(new String[0]);
+        updateComboMonth(new String[0]);
+        updateComboDay(new String[0]);
+
         makeFileMenu(menuHandler);
         makeViewMenu(menuHandler);
 
@@ -291,34 +288,16 @@ public final class App {
         bar.add(view);
     }
 
-    private void updateFilters(String[] values, ActionListener handler, JPanel container) {
-        container.removeAll();
-
-        var all = new JButton("ALL");
-        all.setFocusable(false);
-        all.addActionListener(handler);
-        container.add(all);
-
-        for (String value : values) {
-            var newButton = new JButton(value);
-            newButton.setFocusable(false);
-            newButton.addActionListener(handler);
-            container.add(newButton);
-        }
-
-        container.updateUI();
-    }
-
     private void updateComboYear(String[] years) {
-        updateFilters(years, yearActionLisener, yearsFilterPanel);
+        yearsFilter.setButtons(years);
     }
 
     private void updateComboMonth(String[] months) {
-        updateFilters(months, monthActionLisener, monthsFilterPanel);
+        monthsFilter.setButtons(months);
     }
 
     private void updateComboDay(String[] days) {
-        updateFilters(days, dayActionLisener, daysFilterPanel);
+        daysFilter.setButtons(days);
     }
 
     public static void main(String[] args) {
