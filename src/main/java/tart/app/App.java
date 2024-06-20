@@ -2,9 +2,11 @@ package tart.app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
 import tart.core.Scanner;
+import tart.core.fs.RealFileSystemManager;
 
 public final class App {
 
@@ -24,10 +26,12 @@ public final class App {
     private final ButtonFilter yearsFilter;
     private final ButtonFilter monthsFilter;
     private final ButtonFilter daysFilter;
+    private final ButtonFilter tagsFilter;
 
     private final ActionListener yearActionLisener;
     private final ActionListener monthActionLisener;
     private final ActionListener dayActionLisener;
+    private final ActionListener tagActionLisener;
 
     private final class KeyHandler implements KeyListener {
 
@@ -132,7 +136,7 @@ public final class App {
     public App() {
         String title = "Tart";
 
-        scanner = new Scanner();
+        scanner = new Scanner(new RealFileSystemManager());
         var menuHandler = new MenuHandler();
         var keyHandler = new KeyHandler();
 
@@ -147,7 +151,18 @@ public final class App {
             }
 
             var mask = (String) ae.getActionCommand();
-            scanner.setYearFilter(mask);
+
+            AbstractButton abstractButton = (AbstractButton) ae.getSource();
+            ButtonModel buttonModel = abstractButton.getModel();
+//            boolean armed = buttonModel.isArmed();
+//            boolean pressed = buttonModel.isPressed();
+            boolean selected = buttonModel.isSelected();
+
+            if (selected) {
+                scanner.addYearFilter(mask);
+            } else {
+                scanner.removeYearFilter(mask);
+            }
 
 //            if (scanner.isYearsUpdated()) {
 //                updateComboYear(scanner.getYears());
@@ -169,7 +184,18 @@ public final class App {
             }
 
             var mask = (String) ae.getActionCommand();
-            scanner.setMonthFilter(mask);
+
+            AbstractButton abstractButton = (AbstractButton) ae.getSource();
+            ButtonModel buttonModel = abstractButton.getModel();
+//            boolean armed = buttonModel.isArmed();
+//            boolean pressed = buttonModel.isPressed();
+            boolean selected = buttonModel.isSelected();
+
+            if (selected) {
+                scanner.addMonthFilter(mask);
+            } else {
+                scanner.removeMonthFilter(mask);
+            }
 
             if (scanner.isYearsUpdated()) {
                 updateComboYear(scanner.getYears());
@@ -191,7 +217,18 @@ public final class App {
             }
 
             var mask = (String) ae.getActionCommand();
-            scanner.setDayFilter(mask);
+
+            AbstractButton abstractButton = (AbstractButton) ae.getSource();
+            ButtonModel buttonModel = abstractButton.getModel();
+//            boolean armed = buttonModel.isArmed();
+//            boolean pressed = buttonModel.isPressed();
+            boolean selected = buttonModel.isSelected();
+
+            if (selected) {
+                scanner.addDayFilter(mask);
+            } else {
+                scanner.removeDayFilter(mask);
+            }
 
             if (scanner.isYearsUpdated()) {
                 updateComboYear(scanner.getYears());
@@ -207,22 +244,34 @@ public final class App {
             updateTitle();
             showCurrentImage();
         };
+        tagActionLisener = (ae) -> {
+            if (!scanner.isReady()) {
+                return;
+            }
 
-        var headerLayout = new GridLayout(3, 1);
+            var mask = (String) ae.getActionCommand();
+            System.out.println(mask);
+        };
+
+        var headerLayout = new GridLayout(4, 1); // TODO extract magic numbers or refactor it
 
         header = new JPanel(headerLayout);
 
         yearsFilter = new ButtonFilter("Years", yearActionLisener);
         monthsFilter = new ButtonFilter("Months", monthActionLisener);
         daysFilter = new ButtonFilter("Days", dayActionLisener);
+        tagsFilter = new ButtonFilter("Tags", tagActionLisener);
 
+//        tagsFilter.setEnabled(false);
         header.add(yearsFilter);
         header.add(monthsFilter);
         header.add(daysFilter);
+        header.add(tagsFilter);
 
         updateComboYear(new String[0]);
         updateComboMonth(new String[0]);
         updateComboDay(new String[0]);
+//        updateComboTag(new String[0]);
 
         makeFileMenu(menuHandler);
         makeViewMenu(menuHandler);
@@ -353,23 +402,15 @@ public final class App {
         image.setIcon(scaledIcon);
         image.setHorizontalAlignment(JLabel.CENTER);
 
-//        var pathChunks = file.getAbsolutePath().substring(scanner.getRoot().getAbsolutePath().length()).split("/");
-//        tags.removeAll();
-//        tags.add(new Label("Tags:")); // TODO extract panel leading label
-//        for (String pathChunk : pathChunks) {
-//            if (pathChunk.isEmpty()) {
-//                continue;
-//            }
-//            if (pathChunk.equals(file.getName())) {
-//                continue;
-//            }
-//            tags.add(new Button(String.format("[%s]", pathChunk)));
-//        }
+        // TODO move this code to ceparate method and call it from filter handlers (probably)
+        var pathChunks = file.getAbsolutePath().substring(scanner.getRoot().getAbsolutePath().length()).split("/");
+        var partChunksStream = Stream.of(pathChunks).filter(c -> !c.isEmpty() && !c.equals(file.getName()));
+        tagsFilter.setButtons(partChunksStream.toArray(String[]::new));
     }
 
     private void updateTitle() {
 
-        if (scanner.getRoot() != null) {
+        if (scanner.isReady()) {
             var rootDirs = scanner.getRoot().getAbsolutePath().split("/");
             var endDir = rootDirs[rootDirs.length - 1];
 
