@@ -9,7 +9,7 @@ import tart.core.fs.TestFileSystemManager;
 public class ScannerGetDaysTests {
 
     @Test
-    public void getDaysNoValue() {
+    public void noValue() {
         // Arrange
         var f = new ArrayList<File>();
         var fsm = new TestFileSystemManager(f);
@@ -25,7 +25,7 @@ public class ScannerGetDaysTests {
     }
 
     @Test
-    public void getDaysOneValue() {
+    public void oneValue() {
         // Arrange
         var f = new ArrayList<File>();
         f.add(new File("20240101_120000.png"));
@@ -42,7 +42,7 @@ public class ScannerGetDaysTests {
     }
 
     @Test
-    public void getDaysThreeUniqueValues() {
+    public void threeUniqueValues() {
         // Arrange
         var f = new ArrayList<File>();
         f.add(new File("20240101_120000.png"));
@@ -61,7 +61,7 @@ public class ScannerGetDaysTests {
     }
 
     @Test
-    public void getDaysOneUniqueValue() {
+    public void oneUniqueValue() {
         // Arrange
         var f = new ArrayList<File>();
         f.add(new File("20240101_120000.png"));

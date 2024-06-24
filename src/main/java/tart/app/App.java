@@ -154,8 +154,6 @@ public final class App {
 
             AbstractButton abstractButton = (AbstractButton) ae.getSource();
             ButtonModel buttonModel = abstractButton.getModel();
-//            boolean armed = buttonModel.isArmed();
-//            boolean pressed = buttonModel.isPressed();
             boolean selected = buttonModel.isSelected();
 
             if (selected) {
@@ -220,8 +218,6 @@ public final class App {
 
             AbstractButton abstractButton = (AbstractButton) ae.getSource();
             ButtonModel buttonModel = abstractButton.getModel();
-//            boolean armed = buttonModel.isArmed();
-//            boolean pressed = buttonModel.isPressed();
             boolean selected = buttonModel.isSelected();
 
             if (selected) {

@@ -192,6 +192,10 @@ public class Scanner {
     public void removeYearFilter(String mask) {
         yearMasks.remove(mask);
 
+        if (yearMasks.isEmpty()) {
+            isAllYears = true;
+        }
+
         filter();
     }
 
@@ -216,8 +220,7 @@ public class Scanner {
         monthMasks.remove(mask);
 
         if (monthMasks.isEmpty()) {
-            // TODO extract string
-            monthMasks.add("\\d{2}");
+            isAllMonths = true;
         }
 
         filter();
@@ -243,16 +246,15 @@ public class Scanner {
     public void removeDayFilter(String mask) {
         dayMasks.remove(mask);
 
+        if (dayMasks.isEmpty()) {
+            isAllDays = true;
+        }
+
         filter();
     }
 
     public String[] getYears() {
         yearsReviewed();
-
-//        if (isAllYears) {
-//            // TODO extract string
-//            return new String[]{"20\\d{2}"};
-//        }
 
         var years = new String[allYears.size()];
         allYears.toArray(years);
@@ -263,10 +265,6 @@ public class Scanner {
     public String[] getMonths() {
         monthsReviewed();
 
-//        if (isAllMonths) {
-        // TODO extract string
-//            return new String[]{"\\d{2}"};
-//        }
         var months = new String[allMonths.size()];
         allMonths.toArray(months);
 
@@ -275,11 +273,6 @@ public class Scanner {
 
     public String[] getDays() {
         daysReviewed();
-
-//        if (isAllDays) {
-//            // TODO extract string
-//            return new String[]{"\\d{2}"};
-//        }
 
         var days = new String[allDays.size()];
         allDays.toArray(days);

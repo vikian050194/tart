@@ -9,6 +9,10 @@ public class TestFileSystemManager implements FileSystemManager {
 
     public final List<File> files;
 
+    public TestFileSystemManager() {
+        files = new ArrayList<>();
+    }
+
     public TestFileSystemManager(List<File> f) {
         files = f;
     }
