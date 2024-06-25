@@ -20,28 +20,22 @@ public class Scanner {
 
     private int index = 0;
 
-    private boolean isAllYears = true;
-    private boolean isAllMonths = true;
-    private boolean isAllDays = true;
-
     private final ArrayList<String> allYears = new ArrayList<>();
     private final ArrayList<String> allMonths = new ArrayList<>();
     private final ArrayList<String> allDays = new ArrayList<>();
 
-    private final ArrayList<String> yearMasks = new ArrayList<>();
-    private final ArrayList<String> monthMasks = new ArrayList<>();
-    private final ArrayList<String> dayMasks = new ArrayList<>();
+    public final Filter filter = new Filter();
 
     public Scanner(FileSystemManager fsm) {
         fsManager = fsm;
     }
 
-    private void filter() {
+    public void filter() {
         filFiles.clear();
 
-        for (String yearMask : getYearMasks()) {
-            for (String monthMask : getMonthMasks()) {
-                for (String dayMask : getDayMasks()) {
+        for (String yearMask : filter.getYearMasks()) {
+            for (String monthMask : filter.getMonthMasks()) {
+                for (String dayMask : filter.getDayMasks()) {
                     var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
                     var matcher = new InlineFileMatcher(stringPattern);
                     var result = fsManager.getFiles().stream().filter((f) -> matcher.isMatch(f)).filter((f) -> !filFiles.contains(f));
@@ -172,87 +166,6 @@ public class Scanner {
         return filFiles.size();
     }
 
-    public void addYearFilter(String mask) {
-        if (mask.equals("ALL")) {
-            isAllYears = true;
-            filter();
-            return;
-        }
-
-        if (yearMasks.contains(mask)) {
-            return;
-        }
-
-        isAllYears = false;
-        yearMasks.add(mask);
-
-        filter();
-    }
-
-    public void removeYearFilter(String mask) {
-        yearMasks.remove(mask);
-
-        if (yearMasks.isEmpty()) {
-            isAllYears = true;
-        }
-
-        filter();
-    }
-
-    public void addMonthFilter(String mask) {
-        if (mask.equals("ALL")) {
-            isAllMonths = true;
-            filter();
-            return;
-        }
-
-        if (monthMasks.contains(mask)) {
-            return;
-        }
-
-        isAllMonths = false;
-        monthMasks.add(mask);
-
-        filter();
-    }
-
-    public void removeMonthFilter(String mask) {
-        monthMasks.remove(mask);
-
-        if (monthMasks.isEmpty()) {
-            isAllMonths = true;
-        }
-
-        filter();
-    }
-
-    public void addDayFilter(String mask) {
-        if (mask.equals("ALL")) {
-            isAllDays = true;
-            filter();
-            return;
-        }
-
-        if (dayMasks.contains(mask)) {
-            return;
-        }
-
-        isAllDays = false;
-        dayMasks.add(mask);
-
-        filter();
-    }
-
-    public void removeDayFilter(String mask) {
-        dayMasks.remove(mask);
-
-        if (dayMasks.isEmpty()) {
-            isAllDays = true;
-        }
-
-        filter();
-    }
-
     public String[] getYears() {
         yearsReviewed();
 
@@ -276,42 +189,6 @@ public class Scanner {
 
         var days = new String[allDays.size()];
         allDays.toArray(days);
-
-        return days;
-    }
-
-    public String[] getYearMasks() {
-        if (isAllYears) {
-            // TODO extract string
-            return new String[]{"20\\d{2}"};
-        }
-
-        var years = new String[yearMasks.size()];
-        yearMasks.toArray(years);
-
-        return years;
-    }
-
-    public String[] getMonthMasks() {
-        if (isAllMonths) {
-            // TODO extract string
-            return new String[]{"\\d{2}"};
-        }
-
-        var months = new String[monthMasks.size()];
-        monthMasks.toArray(months);
-
-        return months;
-    }
-
-    public String[] getDayMasks() {
-        if (isAllDays) {
-            // TODO extract string
-            return new String[]{"\\d{2}"};
-        }
-
-        var days = new String[dayMasks.size()];
-        dayMasks.toArray(days);
 
         return days;
     }

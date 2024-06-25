@@ -2,19 +2,17 @@ package tart.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import tart.core.fs.TestFileSystemManager;
 
-public class ScannerGetDayMasksTests {
+public class FilterGetDayMasksTests {
 
     @Test
     public void noMasksDefaultValue() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
+        var f = new Filter();
         var expected = new String[]{"\\d{2}"};
 
         // Act
-        var actual = s.getDayMasks();
+        var actual = f.getDayMasks();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -23,13 +21,12 @@ public class ScannerGetDayMasksTests {
     @Test
     public void oneMask() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
+        var f = new Filter();
         var expected = new String[]{"12"};
 
         // Act
-        s.addDayFilter("12");
-        var actual = s.getDayMasks();
+        f.addDayFilter("12");
+        var actual = f.getDayMasks();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -38,15 +35,14 @@ public class ScannerGetDayMasksTests {
     @Test
     public void threeMasks() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
+        var f = new Filter();
         var expected = new String[]{"12", "23", "31"};
 
         // Act
-        s.addDayFilter("12");
-        s.addDayFilter("23");
-        s.addDayFilter("31");
-        var actual = s.getDayMasks();
+        f.addDayFilter("12");
+        f.addDayFilter("23");
+        f.addDayFilter("31");
+        var actual = f.getDayMasks();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -55,14 +51,13 @@ public class ScannerGetDayMasksTests {
     @Test
     public void oneUniqueMask() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
+        var f = new Filter();
         var expected = new String[]{"12"};
 
         // Act
-        s.addDayFilter("12");
-        s.addDayFilter("12");
-        var actual = s.getDayMasks();
+        f.addDayFilter("12");
+        f.addDayFilter("12");
+        var actual = f.getDayMasks();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -71,14 +66,13 @@ public class ScannerGetDayMasksTests {
     @Test
     public void backToDefaultValue() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
+        var f = new Filter();
         var expected = new String[]{"\\d{2}"};
 
         // Act
-        s.addDayFilter("12");
-        s.removeDayFilter("12");
-        var actual = s.getDayMasks();
+        f.addDayFilter("12");
+        f.removeDayFilter("12");
+        var actual = f.getDayMasks();
 
         // Assert
         assertArrayEquals(expected, actual);

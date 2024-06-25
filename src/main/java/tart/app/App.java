@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
+import tart.core.Filter;
 import tart.core.Scanner;
 import tart.core.fs.RealFileSystemManager;
 
@@ -12,6 +13,7 @@ public final class App {
 
     private final int DEFAULT_SCALE = 3;
 
+    private final Filter filter;
     private final Scanner scanner;
 
     private final JFrame frame;
@@ -137,6 +139,7 @@ public final class App {
         String title = "Tart";
 
         scanner = new Scanner(new RealFileSystemManager());
+        filter = scanner.filter;
         var menuHandler = new MenuHandler();
         var keyHandler = new KeyHandler();
 
@@ -156,10 +159,13 @@ public final class App {
             ButtonModel buttonModel = abstractButton.getModel();
             boolean selected = buttonModel.isSelected();
 
-            if (selected) {
-                scanner.addYearFilter(mask);
-            } else {
-                scanner.removeYearFilter(mask);
+            // TODO temp solutions
+            // refactoring is needed
+            // filter probably chould not be accessible from App class
+            var refilter = selected ? filter.addYearFilter(mask) : filter.removeYearFilter(mask);
+
+            if (refilter) {
+                scanner.filter();
             }
 
 //            if (scanner.isYearsUpdated()) {
@@ -185,14 +191,15 @@ public final class App {
 
             AbstractButton abstractButton = (AbstractButton) ae.getSource();
             ButtonModel buttonModel = abstractButton.getModel();
-//            boolean armed = buttonModel.isArmed();
-//            boolean pressed = buttonModel.isPressed();
             boolean selected = buttonModel.isSelected();
 
-            if (selected) {
-                scanner.addMonthFilter(mask);
-            } else {
-                scanner.removeMonthFilter(mask);
+            // TODO temp solutions
+            // refactoring is needed
+            // filter probably chould not be accessible from App class
+            var refilter = selected ? filter.addMonthFilter(mask) : filter.removeMonthFilter(mask);
+
+            if (refilter) {
+                scanner.filter();
             }
 
             if (scanner.isYearsUpdated()) {
@@ -220,10 +227,13 @@ public final class App {
             ButtonModel buttonModel = abstractButton.getModel();
             boolean selected = buttonModel.isSelected();
 
-            if (selected) {
-                scanner.addDayFilter(mask);
-            } else {
-                scanner.removeDayFilter(mask);
+            // TODO temp solutions
+            // refactoring is needed
+            // filter probably chould not be accessible from App class
+            var refilter = selected ? filter.addDayFilter(mask) : filter.removeDayFilter(mask);
+
+            if (refilter) {
+                scanner.filter();
             }
 
             if (scanner.isYearsUpdated()) {
