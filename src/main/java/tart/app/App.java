@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
-import tart.core.Filter;
+import tart.core.DateFilter;
 import tart.core.Scanner;
 import tart.core.fs.RealFileSystemManager;
 
@@ -13,7 +13,7 @@ public final class App {
 
     private final int DEFAULT_SCALE = 3;
 
-    private final Filter filter;
+    private final DateFilter filter;
     private final Scanner scanner;
 
     private final JFrame frame;

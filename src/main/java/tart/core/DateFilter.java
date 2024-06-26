@@ -2,7 +2,7 @@ package tart.core;
 
 import java.util.ArrayList;
 
-public class Filter {
+public class DateFilter {
 
     private boolean isAllYears = true;
     private boolean isAllMonths = true;

@@ -3,12 +3,12 @@ package tart.core;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-public class FilterGetYearMasksTests {
+public class DateFilterGetYearMasksTests {
 
     @Test
     public void noMasksDefaultValue() {
         // Arrange
-        var f = new Filter();
+        var f = new DateFilter();
         var expected = new String[]{"20\\d{2}"};
 
         // Act
@@ -21,7 +21,7 @@ public class FilterGetYearMasksTests {
     @Test
     public void oneMask() {
         // Arrange
-        var f = new Filter();
+        var f = new DateFilter();
         var expected = new String[]{"2024"};
 
         // Act
@@ -35,7 +35,7 @@ public class FilterGetYearMasksTests {
     @Test
     public void threeMasks() {
         // Arrange
-        var f = new Filter();
+        var f = new DateFilter();
         var expected = new String[]{"2012", "2023", "2031"};
 
         // Act
@@ -51,7 +51,7 @@ public class FilterGetYearMasksTests {
     @Test
     public void oneUniqueMask() {
         // Arrange
-        var f = new Filter();
+        var f = new DateFilter();
         var expected = new String[]{"2012"};
 
         // Act
@@ -66,7 +66,7 @@ public class FilterGetYearMasksTests {
     @Test
     public void backToDefaultValue() {
         // Arrange
-        var f = new Filter();
+        var f = new DateFilter();
         var expected = new String[]{"20\\d{2}"};
 
         // Act

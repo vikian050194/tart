@@ -24,7 +24,7 @@ public class Scanner {
     private final ArrayList<String> allMonths = new ArrayList<>();
     private final ArrayList<String> allDays = new ArrayList<>();
 
-    public final Filter filter = new Filter();
+    public final DateFilter filter = new DateFilter();
 
     public Scanner(FileSystemManager fsm) {
         fsManager = fsm;
