@@ -3,6 +3,7 @@ package tart.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import tart.core.fs.FileSystemManager;
 import tart.core.matcher.AllFileMatcher;
 import tart.core.matcher.InlineFileMatcher;
@@ -12,7 +13,7 @@ public class Scanner {
     private boolean ready;
 
     private final FileSystemManager fsManager;
-    private final ArrayList<File> filFiles = new ArrayList<>();
+    private final List<File> filFiles = new ArrayList<>();
 
     private boolean isYearsUpdated = false;
     private boolean isMonthsUpdated = false;
@@ -20,9 +21,9 @@ public class Scanner {
 
     private int index = 0;
 
-    private final ArrayList<String> allYears = new ArrayList<>();
-    private final ArrayList<String> allMonths = new ArrayList<>();
-    private final ArrayList<String> allDays = new ArrayList<>();
+    private final List<String> allYears = new ArrayList<>();
+    private final List<String> allMonths = new ArrayList<>();
+    private final List<String> allDays = new ArrayList<>();
 
     public final DateFilter filter = new DateFilter();
 
@@ -38,7 +39,9 @@ public class Scanner {
                 for (String dayMask : filter.getDayMasks()) {
                     var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
                     var matcher = new InlineFileMatcher(stringPattern);
-                    var result = fsManager.getFiles().stream().filter((f) -> matcher.isMatch(f)).filter((f) -> !filFiles.contains(f));
+                    var result = fsManager.getFiles().stream()
+                            .filter((f) -> matcher.isMatch(f))
+                            .filter((f) -> !filFiles.contains(f));
                     filFiles.addAll(result.toList());
                 }
             }
