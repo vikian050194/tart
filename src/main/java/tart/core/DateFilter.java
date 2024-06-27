@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 public class DateFilter {
 
+    private static final String YEAR_MASK = "20\\d{2}";
+    private static final String MONTH_MASK = "\\d{2}";
+    private static final String DAY_MASK = "\\d{2}";
+
     private boolean isAllYears = true;
     private boolean isAllMonths = true;
     private boolean isAllDays = true;
@@ -105,8 +109,7 @@ public class DateFilter {
 
     public String[] getYearMasks() {
         if (isAllYears) {
-            // TODO extract string
-            return new String[]{"20\\d{2}"};
+            return new String[]{YEAR_MASK};
         }
 
         var years = new String[yearMasks.size()];
@@ -117,8 +120,7 @@ public class DateFilter {
 
     public String[] getMonthMasks() {
         if (isAllMonths) {
-            // TODO extract string
-            return new String[]{"\\d{2}"};
+            return new String[]{MONTH_MASK};
         }
 
         var months = new String[monthMasks.size()];
@@ -129,8 +131,7 @@ public class DateFilter {
 
     public String[] getDayMasks() {
         if (isAllDays) {
-            // TODO extract string
-            return new String[]{"\\d{2}"};
+            return new String[]{DAY_MASK};
         }
 
         var days = new String[dayMasks.size()];

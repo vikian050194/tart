@@ -409,8 +409,11 @@ public final class App {
         image.setHorizontalAlignment(JLabel.CENTER);
 
         // TODO move this code to ceparate method and call it from filter handlers (probably)
-        var pathChunks = file.getAbsolutePath().substring(scanner.getRoot().getAbsolutePath().length()).split("/");
-        var partChunksStream = Stream.of(pathChunks).filter(c -> !c.isEmpty() && !c.equals(file.getName()));
+        var pathChunks = file.getAbsolutePath()
+                .substring(scanner.getRoot().getAbsolutePath().length())
+                .split("/");
+        var partChunksStream = Stream.of(pathChunks)
+                .filter(c -> !c.isEmpty() && !c.equals(file.getName()));
         tagsFilter.setButtons(partChunksStream.toArray(String[]::new));
     }
 
