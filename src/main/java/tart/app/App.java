@@ -93,9 +93,9 @@ public final class App {
                 updateTitle();
                 showCurrentImage();
 
-                updateComboYear(scanner.getYears());
-                updateComboMonth(scanner.getMonths());
-                updateComboDay(scanner.getDays());
+                updateComboYear(scanner.getPossibleYears());
+                updateComboMonth(scanner.getPossibleMonths());
+                updateComboDay(scanner.getPossibleDays());
             } else {
 // TODO show message
             }
@@ -172,11 +172,11 @@ public final class App {
 //                updateComboYear(scanner.getYears());
 //            }
             if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getMonths());
+                updateComboMonth(scanner.getPossibleMonths());
             }
 
             if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getDays());
+                updateComboDay(scanner.getPossibleDays());
             }
 
             updateTitle();
@@ -203,14 +203,14 @@ public final class App {
             }
 
             if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getYears());
+                updateComboYear(scanner.getPossibleYears());
             }
 
 //            if (scanner.isMonthsUpdated()) {
 //                updateComboMonth(scanner.getMonths());
 //            }
             if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getDays());
+                updateComboDay(scanner.getPossibleDays());
             }
 
             updateTitle();
@@ -237,11 +237,11 @@ public final class App {
             }
 
             if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getYears());
+                updateComboYear(scanner.getPossibleYears());
             }
 
             if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getMonths());
+                updateComboMonth(scanner.getPossibleMonths());
             }
 
 //            if (scanner.isDaysUpdated()) {
@@ -259,7 +259,8 @@ public final class App {
             System.out.println(mask);
         };
 
-        var headerLayout = new GridLayout(4, 1); // TODO extract magic numbers or refactor it
+        // TODO extract magic numbers or refactor it
+        var headerLayout = new GridLayout(4, 1);
 
         header = new JPanel(headerLayout);
 
@@ -268,7 +269,8 @@ public final class App {
         daysFilter = new ButtonFilter("Days", dayActionLisener);
         tagsFilter = new ButtonFilter("Tags", tagActionLisener);
 
-//        tagsFilter.setEnabled(false);
+        tagsFilter.setEnabled(false);
+
         header.add(yearsFilter);
         header.add(monthsFilter);
         header.add(daysFilter);

@@ -36,11 +36,13 @@ public class RealFileSystemManager implements FileSystemManager {
     @Override
     public boolean inspect(File dir, FileMatcher fileMather) {
         if (!dir.exists()) {
+            // TODO remove System.out
             System.out.printf("%s is not found%n", dir);
             return false;
         }
 
         if (dir.isFile()) {
+            // TODO remove System.out
             System.out.printf("%s is not directory%n", dir);
             return false;
         }

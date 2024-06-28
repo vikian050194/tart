@@ -18,7 +18,7 @@ public class ScannerGetMonthsTests {
         var expected = new String[]{};
 
         // Act
-        var actual = s.getMonths();
+        var actual = s.getPossibleMonths();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -35,7 +35,7 @@ public class ScannerGetMonthsTests {
         var expected = new String[]{"01"};
 
         // Act
-        var actual = s.getMonths();
+        var actual = s.getPossibleMonths();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -54,7 +54,7 @@ public class ScannerGetMonthsTests {
         var expected = new String[]{"01", "03", "05"};
 
         // Act
-        var actual = s.getMonths();
+        var actual = s.getPossibleMonths();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -72,7 +72,7 @@ public class ScannerGetMonthsTests {
         var expected = new String[]{"02"};
 
         // Act
-        var actual = s.getMonths();
+        var actual = s.getPossibleMonths();
 
         // Assert
         assertArrayEquals(expected, actual);

@@ -18,7 +18,7 @@ public class ScannerGetYearsTests {
         var expected = new String[]{};
 
         // Act
-        var actual = s.getYears();
+        var actual = s.getPossibleYears();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -35,7 +35,7 @@ public class ScannerGetYearsTests {
         var expected = new String[]{"2024"};
 
         // Act
-        var actual = s.getYears();
+        var actual = s.getPossibleYears();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -54,7 +54,7 @@ public class ScannerGetYearsTests {
         var expected = new String[]{"2022", "2023", "2024"};
 
         // Act
-        var actual = s.getYears();
+        var actual = s.getPossibleYears();
 
         // Assert
         assertArrayEquals(expected, actual);
@@ -72,7 +72,7 @@ public class ScannerGetYearsTests {
         var expected = new String[]{"2024"};
 
         // Act
-        var actual = s.getYears();
+        var actual = s.getPossibleYears();
 
         // Assert
         assertArrayEquals(expected, actual);
