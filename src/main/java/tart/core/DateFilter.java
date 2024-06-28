@@ -56,6 +56,7 @@ public class DateFilter {
 //        filter();
     }
 
+    // TODO fix strange naming - filter or mask?
     public boolean addDayFilter(String mask) {
         if (mask.equals("ALL")) {
             isAllDays = true;
@@ -70,40 +71,70 @@ public class DateFilter {
         isAllDays = false;
         dayMasks.add(mask);
 
-        return false;
+        return true;
 //        filter();
     }
 
     public boolean removeYearFilter(String mask) {
-        yearMasks.remove(mask);
+        if (mask.equals("ALL")) {
+            if (isAllYears) {
+                isAllYears = false;
+                return true;
+            }
+//            filter();
+            return false;
+        }
+
+        var result = yearMasks.remove(mask);
 
         if (yearMasks.isEmpty()) {
+            // TODO should we setup isAllYears if collection is empty?
             isAllYears = true;
         }
 
-        return true;
+        return result;
 //        filter();
     }
 
     public boolean removeMonthFilter(String mask) {
-        monthMasks.remove(mask);
+        if (mask.equals("ALL")) {
+            if (isAllMonths) {
+                isAllMonths = false;
+                return true;
+            }
+//            filter();
+            return false;
+        }
+
+        var result = monthMasks.remove(mask);
 
         if (monthMasks.isEmpty()) {
+            // TODO should we setup isAllMonths if collection is empty?
             isAllMonths = true;
         }
 
-        return true;
+        return result;
 //        filter();
     }
 
     public boolean removeDayFilter(String mask) {
-        dayMasks.remove(mask);
+        if (mask.equals("ALL")) {
+            if (isAllDays) {
+                isAllDays = false;
+                return true;
+            }
+//            filter();
+            return false;
+        }
+
+        var result = dayMasks.remove(mask);
 
         if (dayMasks.isEmpty()) {
+            // TODO should we setup isAllDays if collection is empty?
             isAllDays = true;
         }
 
-        return false;
+        return result;
 //        filter();
     }
 
