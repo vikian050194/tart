@@ -3,21 +3,7 @@ package tart.core;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-public class DateFilterAddDayFilterTests {
-
-    @Test
-    public void allMask() {
-        // Arrange
-        var f = new DateFilter();
-        var testMask = "ALL";
-        var expected = true;
-
-        // Act
-        var actual = f.addDayFilter(testMask);
-
-        // Assert
-        assertEquals(expected, actual);
-    }
+public class DateFilterAddFilterTests {
 
     @Test
     public void customMask() {
@@ -27,7 +13,7 @@ public class DateFilterAddDayFilterTests {
         var expected = true;
 
         // Act
-        var actual = f.addDayFilter(testMask);
+        var actual = f.add(testMask);
 
         // Assert
         assertEquals(expected, actual);
@@ -41,8 +27,8 @@ public class DateFilterAddDayFilterTests {
         var expected = false;
 
         // Act
-        f.addDayFilter(testMask);
-        var actual = f.addDayFilter(testMask);
+        f.add(testMask);
+        var actual = f.add(testMask);
 
         // Assert
         assertEquals(expected, actual);

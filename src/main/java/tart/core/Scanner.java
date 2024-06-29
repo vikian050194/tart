@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import tart.core.fs.FileSystemManager;
 import tart.core.matcher.InlineFileMatcher;
+import tart.core.matcher.data.FileMatcher86All;
 import tart.core.matcher.type.JpgFileMatcher;
 
 public class Scanner {
@@ -29,18 +30,21 @@ public class Scanner {
     private final List<String> availableMonths = new ArrayList<>();
     private final List<String> availableDays = new ArrayList<>();
 
-    public final DateFilter filter = new DateFilter();
+    private final DateFilter yearsFilter = new DateFilter();
+    private final DateFilter monthsFilter = new DateFilter();
+    private final DateFilter daysFilter = new DateFilter();
 
     public Scanner(FileSystemManager fsm) {
         fsManager = fsm;
     }
 
-    public void filter() {
+    public void filter(Filters sf) {
         filFiles.clear();
 
-        for (String yearMask : filter.getYearMasks()) {
-            for (String monthMask : filter.getMonthMasks()) {
-                for (String dayMask : filter.getDayMasks()) {
+        // TODO fix zero-size case
+        for (String yearMask : yearsFilter.get()) {
+            for (String monthMask : monthsFilter.get()) {
+                for (String dayMask : daysFilter.get()) {
                     var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
                     var matcher = new InlineFileMatcher(stringPattern);
                     var result = fsManager.getFiles().stream()
@@ -53,7 +57,7 @@ public class Scanner {
 
         filFiles.sort((a, b) -> a.getName().compareTo(b.getName()));
 
-//        updatePossibleValues(skipFilter);
+        updateAvailableValues(sf);
     }
 
     private void updateAvailableValues(Filters skipFilter) {
@@ -163,12 +167,16 @@ public class Scanner {
     public void scan(String dir) {
         var rootDir = new File(dir);
 
-        ready = fsManager.inspect(rootDir, new JpgFileMatcher());
+        ready = fsManager.inspect(rootDir, new FileMatcher86All(new JpgFileMatcher()));
 
         if (ready) {
-            filter();
             updatePossibleValues();
-            updateAvailableValues(Filters.NONE);
+
+            availableYears.addAll(possibleYears);
+            availableMonths.addAll(possibleMonths);
+            availableDays.addAll(possibleDays);
+
+            filter(Filters.NONE);
         }
     }
 
@@ -204,31 +212,28 @@ public class Scanner {
         return filFiles.size();
     }
 
-    public String[] getPossibleYears() {
+    public List<DateFilterItemValue> getPossibleYears() {
         yearsReviewed();
 
-        var years = new String[possibleYears.size()];
-        possibleYears.toArray(years);
-
-        return years;
+        return possibleYears.stream()
+                .map((y) -> new DateFilterItemValue(y, y, availableYears.contains(y)))
+                .toList();
     }
 
-    public String[] getPossibleMonths() {
+    public List<DateFilterItemValue> getPossibleMonths() {
         monthsReviewed();
 
-        var months = new String[possibleMonths.size()];
-        possibleMonths.toArray(months);
-
-        return months;
+        return possibleMonths.stream()
+                .map((y) -> new DateFilterItemValue(y, y, availableMonths.contains(y)))
+                .toList();
     }
 
-    public String[] getPossibleDays() {
+    public List<DateFilterItemValue> getPossibleDays() {
         daysReviewed();
 
-        var days = new String[possibleDays.size()];
-        possibleDays.toArray(days);
-
-        return days;
+        return possibleDays.stream()
+                .map((y) -> new DateFilterItemValue(y, y, availableDays.contains(y)))
+                .toList();
     }
 
     public boolean isYearsUpdated() {
@@ -254,4 +259,29 @@ public class Scanner {
     private void daysReviewed() {
         isDaysUpdated = false;
     }
+
+    public boolean addYearFilter(String mask) {
+        return yearsFilter.add(mask);
+    }
+
+    public boolean addMonthFilter(String mask) {
+        return monthsFilter.add(mask);
+    }
+
+    public boolean addDayFilter(String mask) {
+        return daysFilter.add(mask);
+    }
+
+    public boolean removeYearFilter(String mask) {
+        return yearsFilter.remove(mask);
+    }
+
+    public boolean removeMonthFilter(String mask) {
+        return monthsFilter.remove(mask);
+    }
+
+    public boolean removeDayFilter(String mask) {
+        return daysFilter.remove(mask);
+    }
+
 }

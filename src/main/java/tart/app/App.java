@@ -2,10 +2,12 @@ package tart.app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
-import tart.core.DateFilter;
+import tart.core.DateFilterItemValue;
+import tart.core.Filters;
 import tart.core.Scanner;
 import tart.core.fs.RealFileSystemManager;
 
@@ -13,7 +15,6 @@ public final class App {
 
     private final int DEFAULT_SCALE = 3;
 
-    private final DateFilter filter;
     private final Scanner scanner;
 
     private final JFrame frame;
@@ -139,7 +140,6 @@ public final class App {
         String title = "Tart";
 
         scanner = new Scanner(new RealFileSystemManager());
-        filter = scanner.filter;
         var menuHandler = new MenuHandler();
         var keyHandler = new KeyHandler();
 
@@ -162,10 +162,10 @@ public final class App {
             // TODO temp solutions
             // refactoring is needed
             // filter probably chould not be accessible from App class
-            var refilter = selected ? filter.addYearFilter(mask) : filter.removeYearFilter(mask);
+            var refilter = selected ? scanner.addYearFilter(mask) : scanner.removeYearFilter(mask);
 
             if (refilter) {
-                scanner.filter();
+                scanner.filter(Filters.YEAR);
             }
 
 //            if (scanner.isYearsUpdated()) {
@@ -196,10 +196,10 @@ public final class App {
             // TODO temp solutions
             // refactoring is needed
             // filter probably chould not be accessible from App class
-            var refilter = selected ? filter.addMonthFilter(mask) : filter.removeMonthFilter(mask);
+            var refilter = selected ? scanner.addMonthFilter(mask) : scanner.removeMonthFilter(mask);
 
             if (refilter) {
-                scanner.filter();
+                scanner.filter(Filters.MONTH);
             }
 
             if (scanner.isYearsUpdated()) {
@@ -230,10 +230,10 @@ public final class App {
             // TODO temp solutions
             // refactoring is needed
             // filter probably chould not be accessible from App class
-            var refilter = selected ? filter.addDayFilter(mask) : filter.removeDayFilter(mask);
+            var refilter = selected ? scanner.addDayFilter(mask) : scanner.removeDayFilter(mask);
 
             if (refilter) {
-                scanner.filter();
+                scanner.filter(Filters.DAY);
             }
 
             if (scanner.isYearsUpdated()) {
@@ -276,9 +276,10 @@ public final class App {
         header.add(daysFilter);
         header.add(tagsFilter);
 
-        updateComboYear(new String[0]);
-        updateComboMonth(new String[0]);
-        updateComboDay(new String[0]);
+        var emptyList = List.of(new DateFilterItemValue[0]);
+        updateComboYear(emptyList);
+        updateComboMonth(emptyList);
+        updateComboDay(emptyList);
 //        updateComboTag(new String[0]);
 
         makeFileMenu(menuHandler);
@@ -345,15 +346,15 @@ public final class App {
         bar.add(view);
     }
 
-    private void updateComboYear(String[] years) {
+    private void updateComboYear(List<DateFilterItemValue> years) {
         yearsFilter.setButtons(years);
     }
 
-    private void updateComboMonth(String[] months) {
+    private void updateComboMonth(List<DateFilterItemValue> months) {
         monthsFilter.setButtons(months);
     }
 
-    private void updateComboDay(String[] days) {
+    private void updateComboDay(List<DateFilterItemValue> days) {
         daysFilter.setButtons(days);
     }
 
@@ -415,8 +416,9 @@ public final class App {
                 .substring(scanner.getRoot().getAbsolutePath().length())
                 .split("/");
         var partChunksStream = Stream.of(pathChunks)
-                .filter(c -> !c.isEmpty() && !c.equals(file.getName()));
-        tagsFilter.setButtons(partChunksStream.toArray(String[]::new));
+                .filter(c -> !c.isEmpty() && !c.equals(file.getName()))
+                .map((p) -> new DateFilterItemValue(p, p, false));
+        tagsFilter.setButtons(partChunksStream.toList());
     }
 
     private void updateTitle() {

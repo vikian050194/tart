@@ -1,10 +1,13 @@
 package tart.app.components;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import tart.core.DateFilterItemValue;
 
 public final class ButtonFilter extends JPanel {
 
@@ -30,33 +33,26 @@ public final class ButtonFilter extends JPanel {
 
         add(cont);
 
-        setButtons(new String[0]);
+        setButtons(List.of(new DateFilterItemValue[0]));
     }
 
-    public void setButtons(String[] values) {
+    public void setButtons(List<DateFilterItemValue> values) {
         buttons.removeAll();
 
         var all = new JToggleButton("ALL");
         all.setFocusable(false);
         all.addActionListener(handler);
+        all.setEnabled(false);
+        all.setFont(new Font("Dialog", Font.BOLD, 12));
         buttons.add(all);
 
-        for (int i = 0; i < values.length; i++) {
-            var value = values[i];
-            var newButton = new JToggleButton(value);
+        for (DateFilterItemValue value : values) {
+            var newButton = new JToggleButton(value.label);
 
-//            var chunks = new LinkedList<String>();
-//
-//            for (int j = 0; j <= i; j++) {
-//                chunks.add(values[j]);
-//            }
-//
-//            var actionCommand = String.join("/", chunks);
-//
-//            newButton.setActionCommand(actionCommand);
             newButton.setFocusable(false);
             newButton.addActionListener(handler);
             buttons.add(newButton);
+
         }
 
         setEnabled(enabled);

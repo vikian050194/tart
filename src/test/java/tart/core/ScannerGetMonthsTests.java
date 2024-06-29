@@ -21,7 +21,7 @@ public class ScannerGetMonthsTests {
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ScannerGetMonthsTests {
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ScannerGetMonthsTests {
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -75,6 +75,6 @@ public class ScannerGetMonthsTests {
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }
