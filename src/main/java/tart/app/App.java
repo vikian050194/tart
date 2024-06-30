@@ -83,6 +83,7 @@ public final class App {
     class MenuHandler implements ActionListener {
 
         private void onOpen() {
+            // TODO fix issue with buttons unexpected selection on second opening
             var fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fc.setAcceptAllFileFilterUsed(false);
@@ -250,6 +251,7 @@ public final class App {
             }
 
             updateTitle();
+            // TODO fix the-same-day-another-year issue
             showCurrentImage();
         };
         dirActionLisener = (ae) -> {

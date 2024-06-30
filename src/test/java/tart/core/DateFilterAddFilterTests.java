@@ -8,7 +8,7 @@ public class DateFilterAddFilterTests {
     @Test
     public void customMask() {
         // Arrange
-        var f = new DateFilter();
+        var f = new DateFilter("default");
         var testMask = "12";
         var expected = true;
 
@@ -22,7 +22,7 @@ public class DateFilterAddFilterTests {
     @Test
     public void customMaskDuplication() {
         // Arrange
-        var f = new DateFilter();
+        var f = new DateFilter("default");
         var testMask = "12";
         var expected = false;
 

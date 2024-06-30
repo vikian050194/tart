@@ -33,7 +33,7 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("01", true, true));
+        var expected = List.of(new DateFilterItemValue("01", true, false));
 
         // Act
         var actual = s.getMonths();
@@ -53,9 +53,9 @@ public class ScannerGetMonthsTests {
         var s = new Scanner(fsm);
         s.scan("test");
         var expected = List.of(
-                new DateFilterItemValue("01", true, true),
-                new DateFilterItemValue("03", false, false),
-                new DateFilterItemValue("05", false, false)
+                new DateFilterItemValue("01", true, false),
+                new DateFilterItemValue("03", true, false),
+                new DateFilterItemValue("05", true, false)
         );
 
         // Act
@@ -74,7 +74,7 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("02", true, true));
+        var expected = List.of(new DateFilterItemValue("02", true, false));
 
         // Act
         var actual = s.getMonths();

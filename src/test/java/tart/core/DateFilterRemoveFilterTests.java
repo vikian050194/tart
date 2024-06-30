@@ -8,7 +8,7 @@ public class DateFilterRemoveFilterTests {
     @Test
     public void customMask() {
         // Arrange
-        var f = new DateFilter();
+        var f = new DateFilter("default");
         var testMask = "12";
         var expected = true;
 
@@ -23,7 +23,7 @@ public class DateFilterRemoveFilterTests {
     @Test
     public void customMaskOneFilterIsRemaining() {
         // Arrange
-        var f = new DateFilter();
+        var f = new DateFilter("default");
         var keepTestMask = "01";
         var testMask = "12";
         var expected = true;
@@ -40,7 +40,7 @@ public class DateFilterRemoveFilterTests {
     @Test
     public void customNewMask() {
         // Arrange
-        var f = new DateFilter();
+        var f = new DateFilter("default");
         var testMask = "12";
         var expected = false;
 

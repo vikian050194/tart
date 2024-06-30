@@ -42,11 +42,11 @@ public class Scanner {
         fsManager = fsm;
     }
 
+    // TODO remove sf?
     public void filter(Filters sf) {
         filFiles.clear();
 
         // TODO fix zero-size case
-        // TODO fix performance issue
         for (String yearMask : yearsFilter.get()) {
             for (String monthMask : monthsFilter.get()) {
                 for (String dayMask : daysFilter.get()) {
@@ -55,7 +55,6 @@ public class Scanner {
 
                     var result = fsManager.getFiles().stream()
                             .filter((f) -> matcher.isMatch(f));
-                    //.filter((f) -> !filFiles.contains(f));
                     filFiles.addAll(result.toList());
                 }
             }
@@ -73,6 +72,7 @@ public class Scanner {
         }
 
         if (filFiles.isEmpty()) {
+            // TODO is it necessary code?
             if (skipFilter != Filters.YEAR) {
                 availableYears.clear();
                 availableYears.addAll(possibleYears);
@@ -202,42 +202,7 @@ public class Scanner {
         if (ready) {
             updatePossibleValues();
 
-//            availableYears.addAll(possibleYears);
-//            availableMonths.addAll(possibleMonths);
-//            availableDays.addAll(possibleDays);
-            // TODO remove this hack - get correct last pair of year, month and day
-            for (String possibleYear : possibleYears) {
-                yearsFilter.add(possibleYear);
-                for (String possibleMonth : possibleMonths) {
-                    monthsFilter.add(possibleMonth);
-                    for (String possibleDay : possibleDays) {
-                        daysFilter.add(possibleDay);
-
-                        filter(Filters.ALL);
-
-                        if (!filFiles.isEmpty()) {
-                            filter(Filters.NONE);
-                            return;
-                        }
-
-                        daysFilter.remove(possibleDay);
-                    }
-                    monthsFilter.remove(possibleMonth);
-                }
-                yearsFilter.remove(possibleYear);
-            }
-
-//            if (!availableYears.isEmpty()) {
-//                yearsFilter.add(year);
-//            }
-//
-//            if (!availableMonths.isEmpty()) {
-//                monthsFilter.add(month);
-//            }
-//
-//            if (!availableDays.isEmpty()) {
-//                daysFilter.add(day);
-//            }
+            filter(Filters.NONE);
         }
     }
 
