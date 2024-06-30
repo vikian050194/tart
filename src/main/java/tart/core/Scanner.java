@@ -42,14 +42,16 @@ public class Scanner {
         filFiles.clear();
 
         // TODO fix zero-size case
+        // TODO fix performance issue
         for (String yearMask : yearsFilter.get()) {
             for (String monthMask : monthsFilter.get()) {
                 for (String dayMask : daysFilter.get()) {
                     var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
                     var matcher = new InlineFileMatcher(stringPattern);
+
                     var result = fsManager.getFiles().stream()
-                            .filter((f) -> matcher.isMatch(f))
-                            .filter((f) -> !filFiles.contains(f));
+                            .filter((f) -> matcher.isMatch(f));
+                    //.filter((f) -> !filFiles.contains(f));
                     filFiles.addAll(result.toList());
                 }
             }
@@ -177,15 +179,42 @@ public class Scanner {
         if (ready) {
             updatePossibleValues();
 
-            availableYears.addAll(possibleYears);
-            availableMonths.addAll(possibleMonths);
-            availableDays.addAll(possibleDays);
+//            availableYears.addAll(possibleYears);
+//            availableMonths.addAll(possibleMonths);
+//            availableDays.addAll(possibleDays);
+            // TODO remove this hack - get correct last pair of year, month and day
+            for (String possibleYear : possibleYears) {
+                yearsFilter.add(possibleYear);
+                for (String possibleMonth : possibleMonths) {
+                    monthsFilter.add(possibleMonth);
+                    for (String possibleDay : possibleDays) {
+                        daysFilter.add(possibleDay);
 
-            yearsFilter.addAll(availableYears);
-            monthsFilter.addAll(availableMonths);
-            daysFilter.addAll(availableDays);
+                        filter(Filters.ALL);
 
-            filter(Filters.ALL);
+                        if (!filFiles.isEmpty()) {
+                            filter(Filters.NONE);
+                            return;
+                        }
+
+                        daysFilter.remove(possibleDay);
+                    }
+                    monthsFilter.remove(possibleMonth);
+                }
+                yearsFilter.remove(possibleYear);
+            }
+
+//            if (!availableYears.isEmpty()) {
+//                yearsFilter.add(year);
+//            }
+//
+//            if (!availableMonths.isEmpty()) {
+//                monthsFilter.add(month);
+//            }
+//
+//            if (!availableDays.isEmpty()) {
+//                daysFilter.add(day);
+//            }
         }
     }
 
@@ -225,7 +254,7 @@ public class Scanner {
         yearsReviewed();
 
         return possibleYears.stream()
-                .map((y) -> new DateFilterItemValue(y, y, availableYears.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableYears.contains(y), yearsFilter.contains(y)))
                 .toList();
     }
 
@@ -233,7 +262,7 @@ public class Scanner {
         monthsReviewed();
 
         return possibleMonths.stream()
-                .map((y) -> new DateFilterItemValue(y, y, availableMonths.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableMonths.contains(y), monthsFilter.contains(y)))
                 .toList();
     }
 
@@ -241,7 +270,7 @@ public class Scanner {
         daysReviewed();
 
         return possibleDays.stream()
-                .map((y) -> new DateFilterItemValue(y, y, availableDays.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableDays.contains(y), daysFilter.contains(y)))
                 .toList();
     }
 

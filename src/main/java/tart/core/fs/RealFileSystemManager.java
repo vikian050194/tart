@@ -49,6 +49,7 @@ public class RealFileSystemManager implements FileSystemManager {
 
         files.clear();
         files.addAll(listFiles(dir, fileMather));
+        files.sort((a, b) -> a.getName().compareTo(b.getName()));
 
         root = dir;
 

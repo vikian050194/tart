@@ -280,7 +280,6 @@ public final class App {
         updateComboYear(emptyList);
         updateComboMonth(emptyList);
         updateComboDay(emptyList);
-//        updateComboTag(new String[0]);
 
         makeFileMenu(menuHandler);
         makeViewMenu(menuHandler);
@@ -388,7 +387,8 @@ public final class App {
     }
 
     private void nextImage() {
-        scanner.gotoNextFile(); // TODO use SwingWorker
+        // TODO use SwingWorker
+        scanner.gotoNextFile();
 
         updateTitle();
         showCurrentImage();
@@ -417,7 +417,7 @@ public final class App {
                 .split("/");
         var partChunksStream = Stream.of(pathChunks)
                 .filter(c -> !c.isEmpty() && !c.equals(file.getName()))
-                .map((p) -> new DateFilterItemValue(p, p, false));
+                .map((p) -> new DateFilterItemValue(p, false, false));
         tagsFilter.setButtons(partChunksStream.toList());
     }
 

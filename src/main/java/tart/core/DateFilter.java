@@ -40,4 +40,7 @@ public class DateFilter {
         return items;
     }
 
+    public boolean contains(String v) {
+        return items.contains(v);
+    }
 }

@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class DateFilterItemValue {
 
-    public String label;
-    public String value;
+    public String text;
     public boolean enabled;
+    public boolean selected;
 
-    public DateFilterItemValue(String l, String v, boolean e) {
-        label = l;
-        value = v;
+    public DateFilterItemValue(String t, boolean e, boolean s) {
+        text = t;
         enabled = e;
+        selected = s;
     }
 
     @Override
@@ -27,15 +27,15 @@ public class DateFilterItemValue {
 
         DateFilterItemValue c = (DateFilterItemValue) o;
 
-        return label.equals(c.label) && value.equals(c.value) && enabled == c.enabled;
+        return text.equals(c.text) && enabled == c.enabled && selected == c.selected;
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 71 * hash + Objects.hashCode(this.label);
-        hash = 71 * hash + Objects.hashCode(this.value);
+        hash = 71 * hash + Objects.hashCode(this.text);
         hash = 71 * hash + (this.enabled ? 1 : 0);
+        hash = 71 * hash + (this.selected ? 1 : 0);
         return hash;
     }
 }

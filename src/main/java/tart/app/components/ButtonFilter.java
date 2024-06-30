@@ -47,8 +47,9 @@ public final class ButtonFilter extends JPanel {
         buttons.add(all);
 
         for (DateFilterItemValue value : values) {
-            var newButton = new JToggleButton(value.label);
+            var newButton = new JToggleButton(value.text);
 
+            newButton.setSelected(value.selected);
             newButton.setFont(new Font("Dialog", Font.PLAIN, 12));
             newButton.setFocusable(false);
             newButton.addActionListener(handler);
