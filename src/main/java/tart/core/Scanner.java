@@ -61,6 +61,11 @@ public class Scanner {
     }
 
     private void updateAvailableValues(Filters skipFilter) {
+        // TODO refactor this hack
+        if (skipFilter == Filters.ALL) {
+            return;
+        }
+
         var prevYears = new String[availableYears.size()];
         availableYears.toArray(prevYears);
         var prevMonths = new String[availableMonths.size()];
@@ -176,7 +181,11 @@ public class Scanner {
             availableMonths.addAll(possibleMonths);
             availableDays.addAll(possibleDays);
 
-            filter(Filters.NONE);
+            yearsFilter.addAll(availableYears);
+            monthsFilter.addAll(availableMonths);
+            daysFilter.addAll(availableDays);
+
+            filter(Filters.ALL);
         }
     }
 

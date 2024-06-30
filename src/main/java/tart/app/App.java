@@ -13,7 +13,7 @@ import tart.core.fs.RealFileSystemManager;
 
 public final class App {
 
-    private final int DEFAULT_SCALE = 3;
+    private final int DEFAULT_SCALE = 4;
 
     private final Scanner scanner;
 

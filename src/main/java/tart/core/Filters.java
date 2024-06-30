@@ -4,5 +4,6 @@ public enum Filters {
     NONE,
     YEAR,
     MONTH,
-    DAY;
+    DAY,
+    ALL;
 }

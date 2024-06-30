@@ -2,6 +2,7 @@ package tart.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import tart.core.fs.TestFileSystemManager;
@@ -15,13 +16,13 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{};
+        var expected = List.of();
 
         // Act
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -32,13 +33,13 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"01"};
+        var expected = List.of(new DateFilterItemValue("01", "01", true));
 
         // Act
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -51,13 +52,13 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"01", "03", "05"};
+        var expected = List.of("01", "03", "05").stream().map((i) -> new DateFilterItemValue(i, i, true)).toList();
 
         // Act
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -69,12 +70,12 @@ public class ScannerGetMonthsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"02"};
+        var expected = List.of(new DateFilterItemValue("02", "02", true));
 
         // Act
         var actual = s.getPossibleMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 }

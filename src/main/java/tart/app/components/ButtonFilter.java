@@ -49,6 +49,7 @@ public final class ButtonFilter extends JPanel {
         for (DateFilterItemValue value : values) {
             var newButton = new JToggleButton(value.label);
 
+            newButton.setFont(new Font("Dialog", Font.PLAIN, 12));
             newButton.setFocusable(false);
             newButton.addActionListener(handler);
             buttons.add(newButton);
@@ -64,8 +65,14 @@ public final class ButtonFilter extends JPanel {
     public void setEnabled(boolean e) {
         enabled = e;
 
-        for (Object button : buttons.getComponents()) {
-            ((JToggleButton) button).setEnabled(e);
+        for (Object o : buttons.getComponents()) {
+            var button = (JToggleButton) o;
+
+            if (button.getText().equals("ALL")) {
+                continue;
+            }
+
+            button.setEnabled(e);
         }
     }
 }

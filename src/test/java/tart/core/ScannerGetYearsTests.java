@@ -2,6 +2,7 @@ package tart.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import tart.core.fs.TestFileSystemManager;
@@ -15,13 +16,13 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{};
+        var expected = List.of();
 
         // Act
         var actual = s.getPossibleYears();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -32,7 +33,7 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"2024"};
+        var expected = List.of(new DateFilterItemValue("2024", "2024", true));
 
         // Act
         var actual = s.getPossibleYears();
@@ -51,7 +52,7 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"2022", "2023", "2024"};
+        var expected = List.of("2022", "2023", "2024").stream().map((i) -> new DateFilterItemValue(i, i, true)).toList();
 
         // Act
         var actual = s.getPossibleYears();
@@ -69,7 +70,7 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = new String[]{"2024"};
+        var expected = List.of(new DateFilterItemValue("2024", "2024", true));
 
         // Act
         var actual = s.getPossibleYears();

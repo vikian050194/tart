@@ -52,7 +52,7 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of("01", "03", "05");
+        var expected = List.of("01", "03", "05").stream().map((i) -> new DateFilterItemValue(i, i, true)).toList();
 
         // Act
         var actual = s.getPossibleDays();
@@ -70,7 +70,7 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of("01");
+        var expected = List.of(new DateFilterItemValue("01", "01", true));
 
         // Act
         var actual = s.getPossibleDays();
