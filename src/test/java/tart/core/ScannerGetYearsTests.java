@@ -19,7 +19,7 @@ public class ScannerGetYearsTests {
         var expected = List.of();
 
         // Act
-        var actual = s.getPossibleYears();
+        var actual = s.getYears();
 
         // Assert
         assertIterableEquals(expected, actual);
@@ -33,10 +33,10 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("2024", "2024", true));
+        var expected = List.of(new DateFilterItemValue("2024", true, true));
 
         // Act
-        var actual = s.getPossibleYears();
+        var actual = s.getYears();
 
         // Assert
         assertEquals(expected, actual);
@@ -52,10 +52,14 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of("2022", "2023", "2024").stream().map((i) -> new DateFilterItemValue(i, i, true)).toList();
+        var expected = List.of(
+                new DateFilterItemValue("2022", true, true),
+                new DateFilterItemValue("2023", false, false),
+                new DateFilterItemValue("2024", false, false)
+        );
 
         // Act
-        var actual = s.getPossibleYears();
+        var actual = s.getYears();
 
         // Assert
         assertEquals(expected, actual);
@@ -70,10 +74,10 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("2024", "2024", true));
+        var expected = List.of(new DateFilterItemValue("2024", true, true));
 
         // Act
-        var actual = s.getPossibleYears();
+        var actual = s.getYears();
 
         // Assert
         assertEquals(expected, actual);

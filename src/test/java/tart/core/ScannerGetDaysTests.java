@@ -19,7 +19,7 @@ public class ScannerGetDaysTests {
         var expected = List.of();
 
         // Act
-        var actual = s.getPossibleDays();
+        var actual = s.getDays();
 
         // Assert
         assertIterableEquals(expected, actual);
@@ -33,10 +33,10 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("01", "01", true));
+        var expected = List.of(new DateFilterItemValue("01", true, true));
 
         // Act
-        var actual = s.getPossibleDays();
+        var actual = s.getDays();
 
         // Assert
         assertIterableEquals(expected, actual);
@@ -52,10 +52,14 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of("01", "03", "05").stream().map((i) -> new DateFilterItemValue(i, i, true)).toList();
+        var expected = List.of(
+                new DateFilterItemValue("01", true, true),
+                new DateFilterItemValue("03", false, false),
+                new DateFilterItemValue("05", false, false)
+        );
 
         // Act
-        var actual = s.getPossibleDays();
+        var actual = s.getDays();
 
         // Assert
         assertIterableEquals(expected, actual);
@@ -70,10 +74,10 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("01", "01", true));
+        var expected = List.of(new DateFilterItemValue("01", true, true));
 
         // Act
-        var actual = s.getPossibleDays();
+        var actual = s.getDays();
 
         // Assert
         assertIterableEquals(expected, actual);

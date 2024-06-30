@@ -34,7 +34,7 @@ public final class App {
     private final ActionListener yearActionLisener;
     private final ActionListener monthActionLisener;
     private final ActionListener dayActionLisener;
-    private final ActionListener tagActionLisener;
+    private final ActionListener dirActionLisener;
 
     private final class KeyHandler implements KeyListener {
 
@@ -94,9 +94,9 @@ public final class App {
                 updateTitle();
                 showCurrentImage();
 
-                updateComboYear(scanner.getPossibleYears());
-                updateComboMonth(scanner.getPossibleMonths());
-                updateComboDay(scanner.getPossibleDays());
+                updateComboYear(scanner.getYears());
+                updateComboMonth(scanner.getMonths());
+                updateComboDay(scanner.getDays());
             } else {
 // TODO show message
             }
@@ -165,18 +165,19 @@ public final class App {
             var refilter = selected ? scanner.addYearFilter(mask) : scanner.removeYearFilter(mask);
 
             if (refilter) {
-                scanner.filter(Filters.YEAR);
+                scanner.filter(Filters.NONE);
             }
 
-//            if (scanner.isYearsUpdated()) {
-//                updateComboYear(scanner.getYears());
-//            }
+            if (scanner.isYearsUpdated()) {
+                updateComboYear(scanner.getYears());
+            }
+
             if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getPossibleMonths());
+                updateComboMonth(scanner.getMonths());
             }
 
             if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getPossibleDays());
+                updateComboDay(scanner.getDays());
             }
 
             updateTitle();
@@ -199,18 +200,18 @@ public final class App {
             var refilter = selected ? scanner.addMonthFilter(mask) : scanner.removeMonthFilter(mask);
 
             if (refilter) {
-                scanner.filter(Filters.MONTH);
+                scanner.filter(Filters.NONE);
             }
 
             if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getPossibleYears());
+                updateComboYear(scanner.getYears());
             }
 
-//            if (scanner.isMonthsUpdated()) {
-//                updateComboMonth(scanner.getMonths());
-//            }
+            if (scanner.isMonthsUpdated()) {
+                updateComboMonth(scanner.getMonths());
+            }
             if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getPossibleDays());
+                updateComboDay(scanner.getDays());
             }
 
             updateTitle();
@@ -233,24 +234,25 @@ public final class App {
             var refilter = selected ? scanner.addDayFilter(mask) : scanner.removeDayFilter(mask);
 
             if (refilter) {
-                scanner.filter(Filters.DAY);
+                scanner.filter(Filters.NONE);
             }
 
             if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getPossibleYears());
+                updateComboYear(scanner.getYears());
             }
 
             if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getPossibleMonths());
+                updateComboMonth(scanner.getMonths());
             }
 
-//            if (scanner.isDaysUpdated()) {
-//                updateComboDay(scanner.getDays());
-//            }
+            if (scanner.isDaysUpdated()) {
+                updateComboDay(scanner.getDays());
+            }
+
             updateTitle();
             showCurrentImage();
         };
-        tagActionLisener = (ae) -> {
+        dirActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
             }
@@ -267,7 +269,7 @@ public final class App {
         yearsFilter = new ButtonFilter("Years", yearActionLisener);
         monthsFilter = new ButtonFilter("Months", monthActionLisener);
         daysFilter = new ButtonFilter("Days", dayActionLisener);
-        tagsFilter = new ButtonFilter("Tags", tagActionLisener);
+        tagsFilter = new ButtonFilter("Dirs", dirActionLisener);
 
         tagsFilter.setEnabled(false);
 

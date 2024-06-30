@@ -50,6 +50,7 @@ public final class ButtonFilter extends JPanel {
             var newButton = new JToggleButton(value.text);
 
             newButton.setSelected(value.selected);
+            newButton.setEnabled(value.enabled);
             newButton.setFont(new Font("Dialog", Font.PLAIN, 12));
             newButton.setFocusable(false);
             newButton.addActionListener(handler);
@@ -57,7 +58,9 @@ public final class ButtonFilter extends JPanel {
 
         }
 
-        setEnabled(enabled);
+        if (!enabled) {
+            setEnabled(enabled);
+        }
 
         buttons.updateUI();
     }

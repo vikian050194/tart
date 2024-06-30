@@ -30,9 +30,13 @@ public class Scanner {
     private final List<String> availableMonths = new ArrayList<>();
     private final List<String> availableDays = new ArrayList<>();
 
-    private final DateFilter yearsFilter = new DateFilter();
-    private final DateFilter monthsFilter = new DateFilter();
-    private final DateFilter daysFilter = new DateFilter();
+    private static final String YEAR_MASK = "20\\d{2}";
+    private static final String MONTH_MASK = "\\d{2}";
+    private static final String DAY_MASK = "\\d{2}";
+
+    private final DateFilter yearsFilter = new DateFilter(YEAR_MASK);
+    private final DateFilter monthsFilter = new DateFilter(MONTH_MASK);
+    private final DateFilter daysFilter = new DateFilter(DAY_MASK);
 
     public Scanner(FileSystemManager fsm) {
         fsManager = fsm;
@@ -68,6 +72,25 @@ public class Scanner {
             return;
         }
 
+        if (filFiles.isEmpty()) {
+            if (skipFilter != Filters.YEAR) {
+                availableYears.clear();
+                availableYears.addAll(possibleYears);
+            }
+
+            if (skipFilter != Filters.MONTH) {
+                availableMonths.clear();
+                availableMonths.addAll(possibleMonths);
+            }
+
+            if (skipFilter != Filters.DAY) {
+                availableDays.clear();
+                availableDays.addAll(possibleDays);
+            }
+
+            return;
+        }
+
         var prevYears = new String[availableYears.size()];
         availableYears.toArray(prevYears);
         var prevMonths = new String[availableMonths.size()];
@@ -75,9 +98,9 @@ public class Scanner {
         var prevDays = new String[availableDays.size()];
         availableDays.toArray(prevDays);
 
-        ArrayList<String> newYears = new ArrayList<>();
-        ArrayList<String> newMonths = new ArrayList<>();
-        ArrayList<String> newDays = new ArrayList<>();
+        List<String> newYears = new ArrayList<>();
+        List<String> newMonths = new ArrayList<>();
+        List<String> newDays = new ArrayList<>();
 
         for (File f : filFiles) {
             var year = f.getName().substring(0, 4);
@@ -126,9 +149,9 @@ public class Scanner {
     }
 
     private void updatePossibleValues() {
-        ArrayList<String> newYears = new ArrayList<>();
-        ArrayList<String> newMonths = new ArrayList<>();
-        ArrayList<String> newDays = new ArrayList<>();
+        List<String> newYears = new ArrayList<>();
+        List<String> newMonths = new ArrayList<>();
+        List<String> newDays = new ArrayList<>();
 
         for (File f : fsManager.getFiles()) {
             var year = f.getName().substring(0, 4);
@@ -250,27 +273,27 @@ public class Scanner {
         return filFiles.size();
     }
 
-    public List<DateFilterItemValue> getPossibleYears() {
+    public List<DateFilterItemValue> getYears() {
         yearsReviewed();
 
         return possibleYears.stream()
-                .map((y) -> new DateFilterItemValue(y, availableYears.contains(y), yearsFilter.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableYears.isEmpty() || availableYears.contains(y), yearsFilter.contains(y)))
                 .toList();
     }
 
-    public List<DateFilterItemValue> getPossibleMonths() {
+    public List<DateFilterItemValue> getMonths() {
         monthsReviewed();
 
         return possibleMonths.stream()
-                .map((y) -> new DateFilterItemValue(y, availableMonths.contains(y), monthsFilter.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableMonths.isEmpty() || availableMonths.contains(y), monthsFilter.contains(y)))
                 .toList();
     }
 
-    public List<DateFilterItemValue> getPossibleDays() {
+    public List<DateFilterItemValue> getDays() {
         daysReviewed();
 
         return possibleDays.stream()
-                .map((y) -> new DateFilterItemValue(y, availableDays.contains(y), daysFilter.contains(y)))
+                .map((y) -> new DateFilterItemValue(y, availableDays.isEmpty() || availableDays.contains(y), daysFilter.contains(y)))
                 .toList();
     }
 
