@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2024-06-17
+## [0.4.0] - 2024-07-01
 
 ### Added
 
-- Filters: tag (directory)
+- Read-only directory filter
+
+### Changed
+
+- Date filters are toggle buttons
 
 ## [0.3.1] - 2024-06-13
 
