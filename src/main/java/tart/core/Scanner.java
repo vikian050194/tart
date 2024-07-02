@@ -238,6 +238,10 @@ public class Scanner {
         return filFiles.size();
     }
 
+    public int getFileIndex() {
+        return index;
+    }
+
     public List<DateFilterItemValue> getYears() {
         yearsReviewed();
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
+import tart.app.components.Footer;
 import tart.core.DateFilterItemValue;
 import tart.core.Filters;
 import tart.core.Scanner;
@@ -35,6 +36,8 @@ public final class App {
     private final ActionListener monthActionLisener;
     private final ActionListener dayActionLisener;
     private final ActionListener dirActionLisener;
+
+    private final Footer footer;
 
     private final class KeyHandler implements KeyListener {
 
@@ -98,6 +101,8 @@ public final class App {
                 updateComboYear(scanner.getYears());
                 updateComboMonth(scanner.getMonths());
                 updateComboDay(scanner.getDays());
+
+                footer.setTotal(scanner.getFilesCount());
             } else {
 // TODO show message
             }
@@ -301,8 +306,11 @@ public final class App {
 
         image = new JLabel();
 
-        frame.add(image, BorderLayout.CENTER);
+        footer = new Footer();
+
         frame.add(header, BorderLayout.NORTH);
+        frame.add(image, BorderLayout.CENTER);
+        frame.add(footer, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
@@ -423,6 +431,9 @@ public final class App {
                 .filter(c -> !c.isEmpty() && !c.equals(file.getName()))
                 .map((p) -> new DateFilterItemValue(p, false, false));
         tagsFilter.setButtons(partChunksStream.toList());
+
+        footer.setTotal(scanner.getFilesCount());
+        footer.setIndex(scanner.getFileIndex() + 1);
     }
 
     private void updateTitle() {
