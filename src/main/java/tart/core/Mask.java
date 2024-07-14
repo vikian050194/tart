@@ -2,16 +2,20 @@ package tart.core;
 
 import java.util.Objects;
 
-public class DateFilterItemValue {
+public class Mask {
 
     public String text;
     public boolean enabled;
     public boolean selected;
 
-    public DateFilterItemValue(String t, boolean e, boolean s) {
+    public Mask(String t, boolean e, boolean s) {
         text = t;
         enabled = e;
         selected = s;
+    }
+
+    public Mask(String t) {
+        this(t, false, false);
     }
 
     @Override
@@ -21,11 +25,11 @@ public class DateFilterItemValue {
             return true;
         }
 
-        if (!(o instanceof DateFilterItemValue)) {
+        if (!(o instanceof Mask)) {
             return false;
         }
 
-        DateFilterItemValue c = (DateFilterItemValue) o;
+        Mask c = (Mask) o;
 
         return text.equals(c.text) && enabled == c.enabled && selected == c.selected;
     }

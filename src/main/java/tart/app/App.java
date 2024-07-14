@@ -2,19 +2,22 @@ package tart.app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
 import tart.app.components.Footer;
-import tart.core.DateFilterItemValue;
-import tart.core.Filters;
+import tart.core.Mask;
 import tart.core.Scanner;
 import tart.core.fs.RealFileSystemManager;
 
 public final class App {
 
+    private final static String APP_TITLE = "Tart";
     private final int DEFAULT_SCALE = 4;
+    private final double DEFAULT_SCALE_STEP = 0.1;
 
     private final Scanner scanner;
 
@@ -22,7 +25,7 @@ public final class App {
 
     private double scale = DEFAULT_SCALE;
 
-    private final JLabel image; // TODO use just ImageIcon
+    private final JLabel image;
 
     private final JMenuBar bar;
 
@@ -30,7 +33,7 @@ public final class App {
     private final ButtonFilter yearsFilter;
     private final ButtonFilter monthsFilter;
     private final ButtonFilter daysFilter;
-    private final ButtonFilter tagsFilter;
+    private final ButtonFilter dirsFilter;
 
     private final ActionListener yearActionLisener;
     private final ActionListener monthActionLisener;
@@ -50,29 +53,19 @@ public final class App {
         public void keyPressed(KeyEvent ke) {
             var key = ke.getKeyCode();
 
-            var isRenderingNeeded = false;
-
             switch (key) {
                 case KeyEvent.VK_LEFT:
                     previousImage();
-                    isRenderingNeeded = true;
                     break;
                 case KeyEvent.VK_RIGHT:
                     nextImage();
-                    isRenderingNeeded = true;
                     break;
                 case KeyEvent.VK_ADD:
                     zoomIn();
-                    isRenderingNeeded = true;
                     break;
                 case KeyEvent.VK_SUBTRACT:
                     zoomOut();
-                    isRenderingNeeded = true;
                     break;
-            }
-
-            if (isRenderingNeeded) {
-                showCurrentImage();
             }
         }
 
@@ -86,7 +79,6 @@ public final class App {
     class MenuHandler implements ActionListener {
 
         private void onOpen() {
-            // TODO fix issue with buttons unexpected selection on second opening
             var fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fc.setAcceptAllFileFilterUsed(false);
@@ -95,8 +87,7 @@ public final class App {
             if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 scanner.scan(fc.getSelectedFile().getAbsolutePath());
 
-                updateTitle();
-                showCurrentImage();
+                updateUI();
 
                 updateComboYear(scanner.getYears());
                 updateComboMonth(scanner.getMonths());
@@ -112,32 +103,71 @@ public final class App {
         public void actionPerformed(ActionEvent ae) {
             var command = ae.getActionCommand();
 
-            if (command.equals("Exit")) {
-                System.exit(0);
+            switch (command) {
+                case "Exit": {
+                    System.exit(0);
+                    break;
+                }
+                case "Open": {
+                    onOpen();
+                    break;
+                }
+                case "Zoom In": {
+                    zoomIn();
+                    break;
+                }
+                case "Zoom Out": {
+                    zoomOut();
+                    break;
+                }
+                case "Reset Zoom": {
+                    zoomReset();
+                    break;
+                }
+                default:
+                    throw new AssertionError();
             }
 
-            if (command.equals("Open")) {
-                onOpen();
-                return;
+        }
+
+    }
+
+    class DateFilterListener implements ActionListener {
+
+        private final Consumer<String> addMask;
+        private final Consumer<String> removeMask;
+
+        public DateFilterListener(Consumer<String> a, Consumer<String> r) {
+            addMask = a;
+            removeMask = r;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            var mask = (String) ae.getActionCommand();
+
+            AbstractButton abstractButton = (AbstractButton) ae.getSource();
+            ButtonModel buttonModel = abstractButton.getModel();
+
+            if (buttonModel.isSelected()) {
+                addMask.accept(mask);
+            } else {
+                removeMask.accept(mask);
             }
 
-            if (command.equals("Zoom In")) {
-                zoomIn();
-                showCurrentImage(); // TODO refactoring is needed
-                return;
+            if (scanner.isYearsUpdated()) {
+                updateComboYear(scanner.getYears());
             }
 
-            if (command.equals("Zoom Out")) {  // TODO too many conditional blocks
-                zoomOut();
-                showCurrentImage(); // TODO refactoring is needed
-                return;
+            if (scanner.isMonthsUpdated()) {
+                updateComboMonth(scanner.getMonths());
             }
 
-            if (command.equals("Reset Zoom")) {
-                zoomReset();
-                showCurrentImage();
+            if (scanner.isDaysUpdated()) {
+                updateComboDay(scanner.getDays());
             }
 
+            updateUI();
         }
 
     }
@@ -154,111 +184,9 @@ public final class App {
         var filtersLayout = new FlowLayout();
         filtersLayout.setAlignment(FlowLayout.LEFT);
 
-        yearActionLisener = (ae) -> {
-            if (!scanner.isReady()) {
-                return;
-            }
-
-            var mask = (String) ae.getActionCommand();
-
-            AbstractButton abstractButton = (AbstractButton) ae.getSource();
-            ButtonModel buttonModel = abstractButton.getModel();
-            boolean selected = buttonModel.isSelected();
-
-            // TODO temp solutions
-            // refactoring is needed
-            // filter probably chould not be accessible from App class
-            var refilter = selected ? scanner.addYearFilter(mask) : scanner.removeYearFilter(mask);
-
-            if (refilter) {
-                scanner.filter(Filters.NONE);
-            }
-
-            if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getYears());
-            }
-
-            if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getMonths());
-            }
-
-            if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getDays());
-            }
-
-            updateTitle();
-            showCurrentImage();
-        };
-        monthActionLisener = (ae) -> {
-            if (!scanner.isReady()) {
-                return;
-            }
-
-            var mask = (String) ae.getActionCommand();
-
-            AbstractButton abstractButton = (AbstractButton) ae.getSource();
-            ButtonModel buttonModel = abstractButton.getModel();
-            boolean selected = buttonModel.isSelected();
-
-            // TODO temp solutions
-            // refactoring is needed
-            // filter probably chould not be accessible from App class
-            var refilter = selected ? scanner.addMonthFilter(mask) : scanner.removeMonthFilter(mask);
-
-            if (refilter) {
-                scanner.filter(Filters.NONE);
-            }
-
-            if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getYears());
-            }
-
-            if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getMonths());
-            }
-            if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getDays());
-            }
-
-            updateTitle();
-            showCurrentImage();
-        };
-        dayActionLisener = (ae) -> {
-            if (!scanner.isReady()) {
-                return;
-            }
-
-            var mask = (String) ae.getActionCommand();
-
-            AbstractButton abstractButton = (AbstractButton) ae.getSource();
-            ButtonModel buttonModel = abstractButton.getModel();
-            boolean selected = buttonModel.isSelected();
-
-            // TODO temp solutions
-            // refactoring is needed
-            // filter probably chould not be accessible from App class
-            var refilter = selected ? scanner.addDayFilter(mask) : scanner.removeDayFilter(mask);
-
-            if (refilter) {
-                scanner.filter(Filters.NONE);
-            }
-
-            if (scanner.isYearsUpdated()) {
-                updateComboYear(scanner.getYears());
-            }
-
-            if (scanner.isMonthsUpdated()) {
-                updateComboMonth(scanner.getMonths());
-            }
-
-            if (scanner.isDaysUpdated()) {
-                updateComboDay(scanner.getDays());
-            }
-
-            updateTitle();
-            // TODO fix the-same-day-another-year issue
-            showCurrentImage();
-        };
+        yearActionLisener = new DateFilterListener(scanner::addYearFilter, scanner::removeYearFilter)::actionPerformed;
+        monthActionLisener = new DateFilterListener(scanner::addMonthFilter, scanner::removeMonthFilter)::actionPerformed;
+        dayActionLisener = new DateFilterListener(scanner::addDayFilter, scanner::removeDayFilter)::actionPerformed;
         dirActionLisener = (ae) -> {
             if (!scanner.isReady()) {
                 return;
@@ -268,24 +196,28 @@ public final class App {
             System.out.println(mask);
         };
 
-        // TODO extract magic numbers or refactor it
-        var headerLayout = new GridLayout(4, 1);
+        var initialRowsCount = 1;
+        var singleColumn = 1;
+        var headerLayout = new GridLayout(initialRowsCount, singleColumn);
 
         header = new JPanel(headerLayout);
 
         yearsFilter = new ButtonFilter("Years", yearActionLisener);
         monthsFilter = new ButtonFilter("Months", monthActionLisener);
         daysFilter = new ButtonFilter("Days", dayActionLisener);
-        tagsFilter = new ButtonFilter("Dirs", dirActionLisener);
+        dirsFilter = new ButtonFilter("Dirs", dirActionLisener);
 
-        tagsFilter.setEnabled(false);
+        dirsFilter.setEnabled(false);
 
         header.add(yearsFilter);
         header.add(monthsFilter);
         header.add(daysFilter);
-        header.add(tagsFilter);
+        header.add(dirsFilter);
 
-        var emptyList = List.of(new DateFilterItemValue[0]);
+        // TODO refactor it if possible
+        headerLayout.setRows(header.getComponents().length);
+
+        var emptyList = List.of(new Mask[0]);
         updateComboYear(emptyList);
         updateComboMonth(emptyList);
         updateComboDay(emptyList);
@@ -326,10 +258,12 @@ public final class App {
         var close = file.add(new JMenuItem("Close", KeyEvent.VK_C));
         close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
         close.addActionListener(handler);
+        close.setEnabled(false);
 
         var save = file.add(new JMenuItem("Save", KeyEvent.VK_S));
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
         save.addActionListener(handler);
+        save.setEnabled(false);
 
         var exit = file.add(new JMenuItem("Exit", KeyEvent.VK_E));
         exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK));
@@ -357,15 +291,22 @@ public final class App {
         bar.add(view);
     }
 
-    private void updateComboYear(List<DateFilterItemValue> years) {
+    private void updateUI() {
+        updateTitle();
+        showCurrentImage();
+        updateFooter();
+        updateDirsFilter();
+    }
+
+    private void updateComboYear(List<Mask> years) {
         yearsFilter.setButtons(years);
     }
 
-    private void updateComboMonth(List<DateFilterItemValue> months) {
+    private void updateComboMonth(List<Mask> months) {
         monthsFilter.setButtons(months);
     }
 
-    private void updateComboDay(List<DateFilterItemValue> days) {
+    private void updateComboDay(List<Mask> days) {
         daysFilter.setButtons(days);
     }
 
@@ -379,81 +320,88 @@ public final class App {
     }
 
     private void zoomIn() {
-        updateZoom(-0.1);
+        updateZoom(-DEFAULT_SCALE_STEP);
     }
 
     private void zoomOut() {
-        updateZoom(0.1);
+        updateZoom(DEFAULT_SCALE_STEP);
     }
 
     private void zoomReset() {
-        scale = DEFAULT_SCALE;
-        showCurrentImage();
+        updateZoom(DEFAULT_SCALE - scale);
     }
 
     private void previousImage() {
         scanner.gotoPreviousFile();
 
-        updateTitle();
-        showCurrentImage();
+        updateUI();
     }
 
     private void nextImage() {
         // TODO use SwingWorker
         scanner.gotoNextFile();
 
-        updateTitle();
-        showCurrentImage();
+        updateUI();
     }
 
-    private ImageIcon getScaledImageIcon(ImageIcon source, int w, int h) {
-        Image image = source.getImage();
-        Image newimg = image.getScaledInstance(w, h, Image.SCALE_FAST); // TODO calculate scaled w and h inside function
+    private ImageIcon getScaledImageIcon(ImageIcon source) {
+        var initialW = source.getIconWidth();
+        var initialH = source.getIconHeight();
+        var scaledW = (int) (initialW / scale);
+        var scaledH = (int) (initialH / scale);
+        var sourceImage = source.getImage();
+        var newimg = sourceImage.getScaledInstance(scaledW, scaledH, Image.SCALE_FAST);
         var result = new ImageIcon(newimg);
         return result;
     }
 
-    private void showCurrentImage() {
+    private void updateFooter() {
+        footer.setTotal(scanner.getFilesCount());
+        footer.setIndex(scanner.getFileIndex() + 1);
+    }
+
+    private void updateDirsFilter() {
         var file = scanner.getFile();
-        var icon = new ImageIcon(file.getAbsolutePath(), file.getName());
-        var w = icon.getIconWidth();
-        var h = icon.getIconHeight();
-        ImageIcon scaledIcon = getScaledImageIcon(icon, (int) (w / scale), (int) (h / scale));
 
-        image.setIcon(scaledIcon);
-        image.setHorizontalAlignment(JLabel.CENTER);
-
-        // TODO move this code to ceparate method and call it from filter handlers (probably)
         var pathChunks = file.getAbsolutePath()
                 .substring(scanner.getRoot().getAbsolutePath().length())
                 .split("/");
         var partChunksStream = Stream.of(pathChunks)
                 .filter(c -> !c.isEmpty() && !c.equals(file.getName()))
-                .map((p) -> new DateFilterItemValue(p, false, false));
-        tagsFilter.setButtons(partChunksStream.toList());
+                .map((p) -> new Mask(p, false, false));
 
-        footer.setTotal(scanner.getFilesCount());
-        footer.setIndex(scanner.getFileIndex() + 1);
+        dirsFilter.setButtons(partChunksStream.toList());
+    }
+
+    private void showCurrentImage() {
+        var file = scanner.getFile();
+        var icon = new ImageIcon(file.getAbsolutePath(), file.getName());
+        ImageIcon scaledIcon = getScaledImageIcon(icon);
+
+        image.setIcon(scaledIcon);
+        image.setHorizontalAlignment(JLabel.CENTER);
     }
 
     private void updateTitle() {
+        var elements = new ArrayList<String>();
 
         if (scanner.isReady()) {
             var rootDirs = scanner.getRoot().getAbsolutePath().split("/");
             var endDir = rootDirs[rootDirs.length - 1];
 
-            frame.setTitle(String.format("%s - Tart ", endDir));
-
             if (scanner.getFile() != null) {
                 var fileName = scanner.getFile().getName();
 
-                frame.setTitle(String.format("%s - %s - Tart", fileName, endDir));
+                elements.add(fileName);
             }
 
-            return;
+            elements.add(endDir);
         }
 
-        // TODO extract title value
-        frame.setTitle("Tart");
+        elements.add(APP_TITLE);
+
+        var title = String.join(" - ", elements);
+
+        frame.setTitle(title);
     }
 }

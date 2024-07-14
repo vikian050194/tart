@@ -16,14 +16,18 @@ public final class Footer extends JPanel {
 
         setLayout(layout);
 
-        // TODO remove magic inline string
-        data = new JLabel("0/0");
+        data = new JLabel();
+        updateText();
 
         add(data);
     }
 
     private String getText() {
         return String.format("%s out of %s", index, total);
+    }
+
+    private void updateText() {
+        data.setText(getText());
     }
 
     public void setIndex(int value) {

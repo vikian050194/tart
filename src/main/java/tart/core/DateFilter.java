@@ -1,7 +1,6 @@
 package tart.core;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class DateFilter {
@@ -13,7 +12,6 @@ public class DateFilter {
         defaultMask = d;
     }
 
-    // TODO fix strange naming - filter or mask?
     public boolean add(String mask) {
 
         if (items.contains(mask)) {
@@ -21,18 +19,6 @@ public class DateFilter {
         }
 
         items.add(mask);
-
-        return true;
-    }
-
-    public boolean addAll(Collection<String> masks) {
-        for (String mask : masks) {
-            var result = add(mask);
-
-            if (result == false) {
-                return false;
-            }
-        }
 
         return true;
     }
@@ -55,5 +41,9 @@ public class DateFilter {
 
     public boolean isEmpty() {
         return items.isEmpty();
+    }
+
+    public void clear() {
+        items.clear();
     }
 }

@@ -7,6 +7,7 @@ import tart.core.matcher.FileMatcher;
 
 public class TestFileSystemManager implements FileSystemManager {
 
+    private boolean inspectResultValue = true;
     public final List<File> files;
 
     public TestFileSystemManager() {
@@ -19,7 +20,7 @@ public class TestFileSystemManager implements FileSystemManager {
 
     @Override
     public boolean inspect(File dir, FileMatcher fileMather) {
-        return true;
+        return inspectResultValue;
     }
 
     @Override
@@ -30,5 +31,9 @@ public class TestFileSystemManager implements FileSystemManager {
     @Override
     public File getRoot() {
         return new File("test");
+    }
+
+    public void setInspectReturnValue(boolean v) {
+        inspectResultValue = v;
     }
 }

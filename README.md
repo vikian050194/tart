@@ -12,13 +12,35 @@ You can take a look at [list of questions and problems](./QA.md) that I faced du
 
 ## Motivation
 
+Some analog of [TagSpaces][tagspaces] is needed. For free. Small(er) features set according to personal workflow will be implemented. 
+
+## Requirements
+
+Developed and tested on `Version 115.0.5790.170 (Official Build) (64-bit)`
+
+## Installation
+
+**deb**
+
 TODO
+
+**snap**
+
+TODO
+
+**From sources**
+
+1. Clone repo `git clone https://github.com/vikian050194/tart.git`;
+2. TODO
 
 ## Usage
 
-TODO
+1. Run the app;
+2. Press `Ctrl+O` to open source directory;
+3. Use date (year, month and day) filters;
+4. Press arrows (left and right) to open next and previous image.
 
-### Install
+### Configuration
 
 TODO
 
@@ -36,3 +58,5 @@ java -jar target/tart-0.1.0-jar-with-dependencies.jar <path to directory with ph
 
 [coverage-url]: https://codecov.io/gh/vikian050194/tart
 [coverage-badge]: https://img.shields.io/codecov/c/github/vikian050194/tart
+
+[tagspaces-url]: https://www.tagspaces.org/

@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import tart.core.DateFilterItemValue;
+import tart.core.Mask;
 
 public final class ButtonFilter extends JPanel {
 
@@ -33,10 +33,10 @@ public final class ButtonFilter extends JPanel {
 
         add(cont);
 
-        setButtons(List.of(new DateFilterItemValue[0]));
+        setButtons(List.of(new Mask[0]));
     }
 
-    public void setButtons(List<DateFilterItemValue> values) {
+    public void setButtons(List<Mask> values) {
         buttons.removeAll();
 
         var all = new JToggleButton("ALL");
@@ -46,7 +46,7 @@ public final class ButtonFilter extends JPanel {
         all.setFont(new Font("Dialog", Font.BOLD, 12));
         buttons.add(all);
 
-        for (DateFilterItemValue value : values) {
+        for (Mask value : values) {
             var newButton = new JToggleButton(value.text);
 
             newButton.setSelected(value.selected);

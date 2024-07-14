@@ -33,7 +33,7 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("2024", true, false));
+        var expected = List.of(new Mask("2024", true, false));
 
         // Act
         var actual = s.getYears();
@@ -53,9 +53,9 @@ public class ScannerGetYearsTests {
         var s = new Scanner(fsm);
         s.scan("test");
         var expected = List.of(
-                new DateFilterItemValue("2022", true, false),
-                new DateFilterItemValue("2023", true, false),
-                new DateFilterItemValue("2024", true, false)
+                new Mask("2022", true, false),
+                new Mask("2023", true, false),
+                new Mask("2024", true, false)
         );
 
         // Act
@@ -74,7 +74,7 @@ public class ScannerGetYearsTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("2024", true, false));
+        var expected = List.of(new Mask("2024", true, false));
 
         // Act
         var actual = s.getYears();

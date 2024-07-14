@@ -53,7 +53,7 @@ public class RealFileSystemManager implements FileSystemManager {
 
         root = dir;
 
-        return true;
+        return !files.isEmpty();
     }
 
     @Override

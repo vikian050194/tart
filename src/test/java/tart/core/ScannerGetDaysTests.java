@@ -33,7 +33,7 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("01", true, false));
+        var expected = List.of(new Mask("01", true, false));
 
         // Act
         var actual = s.getDays();
@@ -53,9 +53,9 @@ public class ScannerGetDaysTests {
         var s = new Scanner(fsm);
         s.scan("test");
         var expected = List.of(
-                new DateFilterItemValue("01", true, false),
-                new DateFilterItemValue("03", true, false),
-                new DateFilterItemValue("05", true, false)
+                new Mask("01", true, false),
+                new Mask("03", true, false),
+                new Mask("05", true, false)
         );
 
         // Act
@@ -74,7 +74,7 @@ public class ScannerGetDaysTests {
         var fsm = new TestFileSystemManager(f);
         var s = new Scanner(fsm);
         s.scan("test");
-        var expected = List.of(new DateFilterItemValue("01", true, false));
+        var expected = List.of(new Mask("01", true, false));
 
         // Act
         var actual = s.getDays();
