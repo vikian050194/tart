@@ -12,11 +12,14 @@ You can take a look at [list of questions and problems](./QA.md) that I faced du
 
 ## Motivation
 
-Some analog of [TagSpaces][tagspaces] is needed. For free. Small(er) features set according to personal workflow will be implemented. 
+About 15k files that I need to review and sort, probably delete failed photos and unnecessary duplications.
+So I need some analog of [TagSpaces][tagspaces-url], but smaller and it should have features set according to personal workflow.
 
 ## Requirements
 
-Developed and tested on `Version 115.0.5790.170 (Official Build) (64-bit)`
+OS: Ubuntu 20.04.6 LTS
+
+Java: openjdk 17.0.11
 
 ## Installation
 
@@ -38,7 +41,9 @@ TODO
 1. Run the app;
 2. Press `Ctrl+O` to open source directory;
 3. Use date (year, month and day) filters;
-4. Press arrows (left and right) to open next and previous image.
+4. Press arrows (left and right) to open next and previous image;
+5. Select "move to" directory (up to 10);
+6. Press `0` - `9` to move current image there.
 
 ### Configuration
 
@@ -46,9 +51,7 @@ TODO
 
 ### Run
 
-```
-java -jar target/tart-0.1.0-jar-with-dependencies.jar <path to directory with photos or images>
-```
+TODO
 
 [status-url]: https://github.com/vikian050194/tart/pulse
 [status-badge]: https://img.shields.io/github/last-commit/vikian050194/tart.svg
