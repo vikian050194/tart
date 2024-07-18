@@ -17,13 +17,15 @@ public final class Footer extends JPanel {
         setLayout(layout);
 
         data = new JLabel();
+        data.setToolTipText("current/total");
+
         updateText();
 
         add(data);
     }
 
     private String getText() {
-        return String.format("%s out of %s", index, total);
+        return String.format("%s/%s", index, total);
     }
 
     private void updateText() {

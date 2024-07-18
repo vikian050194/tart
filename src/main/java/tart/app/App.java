@@ -2,6 +2,8 @@ package tart.app;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,6 +11,7 @@ import java.util.stream.Stream;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
 import tart.app.components.Footer;
+import tart.app.components.Transporter;
 import tart.core.Mask;
 import tart.core.Scanner;
 import tart.core.fs.RealFileSystemManager;
@@ -35,10 +38,14 @@ public final class App {
     private final ButtonFilter daysFilter;
     private final ButtonFilter dirsFilter;
 
+    private final Transporter transporter;
+    private final List<File> directions;
+
     private final ActionListener yearActionLisener;
     private final ActionListener monthActionLisener;
     private final ActionListener dayActionLisener;
     private final ActionListener dirActionLisener;
+    private final ActionListener transportActionListener;
 
     private final Footer footer;
 
@@ -54,18 +61,63 @@ public final class App {
             var key = ke.getKeyCode();
 
             switch (key) {
-                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_LEFT: {
                     previousImage();
                     break;
-                case KeyEvent.VK_RIGHT:
+                }
+                case KeyEvent.VK_RIGHT: {
                     nextImage();
                     break;
-                case KeyEvent.VK_ADD:
+                }
+                case KeyEvent.VK_ADD: {
                     zoomIn();
                     break;
-                case KeyEvent.VK_SUBTRACT:
+                }
+                case KeyEvent.VK_SUBTRACT: {
                     zoomOut();
                     break;
+                }
+                case KeyEvent.VK_0:
+                case KeyEvent.VK_1:
+                case KeyEvent.VK_2:
+                case KeyEvent.VK_3:
+                case KeyEvent.VK_4:
+                case KeyEvent.VK_5:
+                case KeyEvent.VK_6:
+                case KeyEvent.VK_7:
+                case KeyEvent.VK_8:
+                case KeyEvent.VK_9:
+                case KeyEvent.VK_NUMPAD0:
+                case KeyEvent.VK_NUMPAD1:
+                case KeyEvent.VK_NUMPAD2:
+                case KeyEvent.VK_NUMPAD3:
+                case KeyEvent.VK_NUMPAD4:
+                case KeyEvent.VK_NUMPAD5:
+                case KeyEvent.VK_NUMPAD6:
+                case KeyEvent.VK_NUMPAD7:
+                case KeyEvent.VK_NUMPAD8:
+                case KeyEvent.VK_NUMPAD9: {
+                    var index = 0;
+                    // TODO simplify conditions
+                    if (key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9) {
+                        index = key - KeyEvent.VK_0;
+                    }
+
+                    if (key >= KeyEvent.VK_NUMPAD0 && key <= KeyEvent.VK_NUMPAD9) {
+                        index = key - KeyEvent.VK_NUMPAD0;
+                    }
+
+                    var direction = directions.get(index);
+
+                    if (direction == null) {
+                        return;
+                    }
+
+                    // TODO is scanner ready?
+                    scanner.moveTo(direction);
+                    updateDirsFilter();
+                    break;
+                }
             }
         }
 
@@ -92,6 +144,11 @@ public final class App {
                 updateComboYear(scanner.getYears());
                 updateComboMonth(scanner.getMonths());
                 updateComboDay(scanner.getDays());
+
+                // TODO refactor reset method usage - just set full array of empty values?
+                // TODO disable on close
+                transporter.setEnabled(true);
+                transporter.reset();
 
                 footer.setTotal(scanner.getFilesCount());
             } else {
@@ -172,6 +229,39 @@ public final class App {
 
     }
 
+    class TransporterActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            var index = (String) ae.getActionCommand();
+            var i = parseInt(index);
+
+            var button = (JButton) ae.getSource();
+
+            var fc = new JFileChooser();
+            fc.setCurrentDirectory(scanner.getRoot());
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fc.setAcceptAllFileFilterUsed(false);
+            fc.setDialogTitle("Select directory with images");
+
+            if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                var target = fc.getSelectedFile();
+
+                if (target.isFile()) {
+                    return;
+                }
+
+                directions.set(i, target);
+
+                button.setText(target.getName());
+
+            } else {
+// TODO show message
+            }
+        }
+
+    }
+
     public App() {
         String title = "Tart";
 
@@ -195,6 +285,7 @@ public final class App {
             var mask = (String) ae.getActionCommand();
             System.out.println(mask);
         };
+        transportActionListener = new TransporterActionListener()::actionPerformed;
 
         var initialRowsCount = 1;
         var singleColumn = 1;
@@ -207,12 +298,20 @@ public final class App {
         daysFilter = new ButtonFilter("Days", dayActionLisener);
         dirsFilter = new ButtonFilter("Dirs", dirActionLisener);
 
+        var count = 10;
+        transporter = new Transporter(count, transportActionListener);
+        directions = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            directions.add(null);
+        }
+
         dirsFilter.setEnabled(false);
 
         header.add(yearsFilter);
         header.add(monthsFilter);
         header.add(daysFilter);
         header.add(dirsFilter);
+        header.add(transporter);
 
         // TODO refactor it if possible
         headerLayout.setRows(header.getComponents().length);

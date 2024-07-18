@@ -12,20 +12,20 @@ import tart.core.Mask;
 public final class ButtonFilter extends JPanel {
 
     private boolean enabled;
-    private final ActionListener handler;
+    private final ActionListener al;
     private final JPanel buttons;
 
-    public ButtonFilter(String n, ActionListener h) {
+    public ButtonFilter(String n, ActionListener al) {
         enabled = true;
 
-        handler = h;
+        this.al = al;
 
         var layout = new FlowLayout();
         layout.setAlignment(FlowLayout.LEFT);
 
         setLayout(layout);
 
-        var name = new JLabel(n);
+        var name = new JLabel(String.format("%s:", n));
         var cont = new JPanel(layout);
         cont.add(name);
         buttons = new JPanel(layout);
@@ -41,7 +41,7 @@ public final class ButtonFilter extends JPanel {
 
         var all = new JToggleButton("ALL");
         all.setFocusable(false);
-        all.addActionListener(handler);
+        all.addActionListener(al);
         all.setEnabled(false);
         all.setFont(new Font("Dialog", Font.BOLD, 12));
         buttons.add(all);
@@ -53,7 +53,7 @@ public final class ButtonFilter extends JPanel {
             newButton.setEnabled(value.enabled);
             newButton.setFont(new Font("Dialog", Font.PLAIN, 12));
             newButton.setFocusable(false);
-            newButton.addActionListener(handler);
+            newButton.addActionListener(al);
             buttons.add(newButton);
 
         }

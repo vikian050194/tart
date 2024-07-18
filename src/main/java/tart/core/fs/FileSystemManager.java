@@ -12,4 +12,6 @@ public interface FileSystemManager {
 
     // TODO refactor code and remove this method
     public File getRoot();
+
+    public File moveTo(File sourceFile, File targetDir);
 }

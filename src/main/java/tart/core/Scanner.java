@@ -244,6 +244,14 @@ public class Scanner {
         return filFiles.get(index);
     }
 
+    private void setFile(File newFile) {
+        if (filFiles.isEmpty()) {
+            return;
+        }
+
+        filFiles.set(index, newFile);
+    }
+
     public File getRoot() {
         return fsManager.getRoot();
     }
@@ -340,4 +348,10 @@ public class Scanner {
         }
     }
 
+    public void moveTo(File target) {
+        // TODO add unit tests
+        var file = getFile();
+        var newFile = fsManager.moveTo(file, target);
+        setFile(newFile);
+    }
 }

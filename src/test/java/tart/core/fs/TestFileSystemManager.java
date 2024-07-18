@@ -36,4 +36,12 @@ public class TestFileSystemManager implements FileSystemManager {
     public void setInspectReturnValue(boolean v) {
         inspectResultValue = v;
     }
+
+    @Override
+    public File moveTo(File sourceFile, File targetDir) {
+        // TODO refactor production code duplication
+        var targetFile = new File(targetDir, sourceFile.getName());
+        sourceFile.renameTo(targetFile);
+        return targetFile;
+    }
 }

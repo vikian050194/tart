@@ -10,10 +10,13 @@ import tart.core.matcher.FileMatcher;
 
 public class RealFileSystemManager implements FileSystemManager {
 
+    // TODO how to unit test this class?
     private final ArrayList<File> files = new ArrayList<>();
     private File root;
+    private boolean changed = false;
+    private FileMatcher lastFileMatcher;
 
-    private List<File> listFiles(File dir, FileMatcher fileMather) {
+    private List<File> listFiles(File dir, FileMatcher fileMatcher) {
         var result = new ArrayList<File>();
         var queue = new LinkedList<File>();
         queue.add(dir);
@@ -25,7 +28,7 @@ public class RealFileSystemManager implements FileSystemManager {
                     .collect(Collectors.toList());
             queue.addAll(dirs);
             var currentDirFiles = Stream.of(currentDir.listFiles())
-                    .filter(file -> !file.isDirectory() && fileMather.isMatch(file))
+                    .filter(file -> !file.isDirectory() && fileMatcher.isMatch(file))
                     .collect(Collectors.toList());
             result.addAll(currentDirFiles);
         }
@@ -34,7 +37,7 @@ public class RealFileSystemManager implements FileSystemManager {
     }
 
     @Override
-    public boolean inspect(File dir, FileMatcher fileMather) {
+    public boolean inspect(File dir, FileMatcher fileMatcher) {
         if (!dir.exists()) {
             // TODO remove System.out
             System.out.printf("%s is not found%n", dir);
@@ -48,21 +51,42 @@ public class RealFileSystemManager implements FileSystemManager {
         }
 
         files.clear();
-        files.addAll(listFiles(dir, fileMather));
+        files.addAll(listFiles(dir, fileMatcher));
         files.sort((a, b) -> a.getName().compareTo(b.getName()));
 
         root = dir;
+        lastFileMatcher = fileMatcher;
 
         return !files.isEmpty();
     }
 
     @Override
     public List<File> getFiles() {
+        if (changed) {
+            // TODO refactor this non optimal last file mather storing
+            // TODO full inspect is heavy - update only changed File?
+            inspect(root, lastFileMatcher);
+        }
+
         return new ArrayList<>(files);
     }
 
     @Override
     public File getRoot() {
         return root;
+    }
+
+    @Override
+    public File moveTo(File sourceFile, File targetDir) {
+        var targetFile = new File(targetDir, sourceFile.getName());
+
+        changed = !sourceFile.equals(targetFile);
+
+        if (changed) {
+            sourceFile.renameTo(targetFile);
+            return targetFile;
+        }
+
+        return sourceFile;
     }
 }

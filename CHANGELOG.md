@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.1] - 2024-07-03
+## [0.6.0] - 2024-07-18
+
+### Added
+
+- Header: 10 configurable "move to" buttons
+- Footer: tooltip
+
+### Changed
+
+- Footer: data format
+
+## [0.5.1] - 2024-07-14
 
 ### Fixed
 
@@ -63,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Select working directory
 - Show analysis: files type and name formats
 
-[Unreleased]: https://github.com/vikian050194/tart/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/vikian050194/tart/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/vikian050194/tart/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/vikian050194/tart/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/vikian050194/tart/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/vikian050194/tart/compare/v0.3.1...v0.4.0
