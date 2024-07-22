@@ -3,11 +3,15 @@ package tart.app;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import tart.app.components.ButtonFilter;
 import tart.app.components.Footer;
@@ -19,7 +23,7 @@ import tart.core.fs.RealFileSystemManager;
 public final class App {
 
     private final static String APP_TITLE = "Tart";
-    private final int DEFAULT_SCALE = 4;
+    private final int DEFAULT_SCALE = 1;
     private final double DEFAULT_SCALE_STEP = 0.1;
 
     private final Scanner scanner;
@@ -28,7 +32,7 @@ public final class App {
 
     private double scale = DEFAULT_SCALE;
 
-    private final JLabel image;
+    private final ZoomComponent zoomComp;
 
     private final JMenuBar bar;
 
@@ -263,6 +267,23 @@ public final class App {
     }
 
     public App() {
+        try {
+            // TODO select look and feel
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        }
+
+        UIManager.getDefaults().put("ZoomComponentUI", "tart.app.BasicZoomUI");
+
+        DefaultZoomModel model = new DefaultZoomModel();
+        model.setValue(50);
+        zoomComp = new ZoomComponent();
+        zoomComp.setModel(model);
+
+        JSlider slider = new JSlider(model);
+
         String title = "Tart";
 
         scanner = new Scanner(new RealFileSystemManager());
@@ -330,18 +351,20 @@ public final class App {
 
         frame.setLayout(new BorderLayout());
 
+        // TODO extract magic numbers
         frame.setSize(720, 480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.setJMenuBar(bar);
 
-        image = new JLabel();
-
         footer = new Footer();
 
         frame.add(header, BorderLayout.NORTH);
-        frame.add(image, BorderLayout.CENTER);
-        frame.add(footer, BorderLayout.SOUTH);
+        frame.add(new JScrollPane(zoomComp), BorderLayout.CENTER);
+        // TODO uncomment footer
+//        frame.add(footer, BorderLayout.SOUTH);
+        // TODO move slider somewhere - inside component?
+        frame.add(slider, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
@@ -443,17 +466,6 @@ public final class App {
         updateUI();
     }
 
-    private ImageIcon getScaledImageIcon(ImageIcon source) {
-        var initialW = source.getIconWidth();
-        var initialH = source.getIconHeight();
-        var scaledW = (int) (initialW / scale);
-        var scaledH = (int) (initialH / scale);
-        var sourceImage = source.getImage();
-        var newimg = sourceImage.getScaledInstance(scaledW, scaledH, Image.SCALE_FAST);
-        var result = new ImageIcon(newimg);
-        return result;
-    }
-
     private void updateFooter() {
         footer.setTotal(scanner.getFilesCount());
         footer.setIndex(scanner.getFileIndex() + 1);
@@ -474,11 +486,13 @@ public final class App {
 
     private void showCurrentImage() {
         var file = scanner.getFile();
-        var icon = new ImageIcon(file.getAbsolutePath(), file.getName());
-        ImageIcon scaledIcon = getScaledImageIcon(icon);
-
-        image.setIcon(scaledIcon);
-        image.setHorizontalAlignment(JLabel.CENTER);
+        try {
+            var image = ImageIO.read(file);
+            // TODO avoid getModel call
+            zoomComp.getModel().setImage(image);
+        } catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void updateTitle() {
