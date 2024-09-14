@@ -1,5 +1,6 @@
 package tart.core;
 
+import tart.app.components.filter.Mask;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

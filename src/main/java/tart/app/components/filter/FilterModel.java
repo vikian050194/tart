@@ -1,14 +1,14 @@
-package tart.core;
+package tart.app.components.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DateFilter {
+public class FilterModel {
 
     private final List<String> items = new ArrayList<>();
     private final String defaultMask;
 
-    public DateFilter(String d) {
+    public FilterModel(String d) {
         defaultMask = d;
     }
 

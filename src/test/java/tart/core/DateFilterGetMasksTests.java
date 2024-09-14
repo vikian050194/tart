@@ -1,5 +1,6 @@
 package tart.core;
 
+import tart.app.components.filter.FilterModel;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ public class DateFilterGetMasksTests {
     @Test
     public void noMasksDefaultValue() {
         // Arrange
-        var f = new DateFilter("default");
+        var f = new FilterModel("default");
         var expected = List.of("default");
 
         // Act
@@ -22,7 +23,7 @@ public class DateFilterGetMasksTests {
     @Test
     public void oneMask() {
         // Arrange
-        var f = new DateFilter("default");
+        var f = new FilterModel("default");
         var expected = List.of("12");
 
         // Act
@@ -36,7 +37,7 @@ public class DateFilterGetMasksTests {
     @Test
     public void threeMasks() {
         // Arrange
-        var f = new DateFilter("default");
+        var f = new FilterModel("default");
         var expected = List.of("12", "23", "31");
 
         // Act
@@ -52,7 +53,7 @@ public class DateFilterGetMasksTests {
     @Test
     public void oneUniqueMask() {
         // Arrange
-        var f = new DateFilter("default");
+        var f = new FilterModel("default");
         var expected = List.of("12");
 
         // Act

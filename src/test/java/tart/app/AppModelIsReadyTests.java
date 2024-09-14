@@ -1,33 +1,38 @@
-package tart.core;
+package tart.app;
 
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import tart.core.fs.TestFileSystemManager;
 
-public class ScannerScanTests {
+public class AppModelIsReadyTests {
 
     @Test
     public void notReady() {
         // Arrange
         var fsm = new TestFileSystemManager();
-        fsm.setInspectReturnValue(false);
-        var s = new Scanner(fsm);
+        var s = new AppModel(fsm);
+        var expected = false;
 
         // Act
-        s.scan("test");
+        var actual = s.isReady();
 
         // Assert
+        assertEquals(expected, actual);
     }
 
     @Test
     public void ready() {
         // Arrange
         var fsm = new TestFileSystemManager();
-        fsm.setInspectReturnValue(true);
-        var s = new Scanner(fsm);
+        var s = new AppModel(fsm);
+        var expected = true;
 
         // Act
         s.scan("test");
+        var actual = s.isReady();
 
         // Assert
+        assertEquals(expected, actual);
     }
+
 }

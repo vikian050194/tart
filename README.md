@@ -19,7 +19,7 @@ So I need some analog of [TagSpaces][tagspaces-url], but smaller and it should h
 
 OS: Ubuntu 20.04.6 LTS
 
-Java: openjdk 17.0.11
+Java: OpenJDK 17.0.11
 
 ## Installation
 

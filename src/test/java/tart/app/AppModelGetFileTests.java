@@ -1,44 +1,40 @@
-package tart.core;
+package tart.app;
 
 import java.io.File;
 import java.util.ArrayList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import tart.core.fs.TestFileSystemManager;
 
-public class ScannerGetFileIndexTests {
+public class AppModelGetFileTests {
 
     @Test
-    public void zero() {
+    public void noFile() {
         // Arrange
         var fsm = new TestFileSystemManager();
-        var s = new Scanner(fsm);
-        var expected = 0;
+        var s = new AppModel(fsm);
+        File expected = null;
 
         // Act
         s.scan("test");
-        var actual = s.getFileIndex();
+        var actual = s.getFile();
 
         // Assert
         assertEquals(expected, actual);
     }
 
     @Test
-    public void three() {
+    public void sameFile() {
         // Arrange
         var f = new ArrayList<File>();
         f.add(new File("20240101_120000.png"));
-        f.add(new File("20240103_120000.jpg"));
-        f.add(new File("20240105_120000.jpeg"));
         var fsm = new TestFileSystemManager(f);
-        var s = new Scanner(fsm);
-        var expected = 2;
+        var s = new AppModel(fsm);
+        var expected = f.get(0);
 
         // Act
         s.scan("test");
-        s.gotoNextFile();
-        s.gotoNextFile();
-        var actual = s.getFileIndex();
+        var actual = s.getFile();
 
         // Assert
         assertEquals(expected, actual);
