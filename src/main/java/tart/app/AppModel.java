@@ -254,6 +254,17 @@ public class AppModel {
         fireStateChanged();
     }
 
+    public void deleteFile() {
+        // TODO handle "last image is deleted" case
+        var targetFile = getFile();
+        filFiles.remove(targetFile);
+        fsManager.delete(targetFile);
+
+        size = filFiles.size();
+
+        fireStateChanged();
+    }
+
     public File getFile() {
         if (filFiles.isEmpty()) {
             return null;

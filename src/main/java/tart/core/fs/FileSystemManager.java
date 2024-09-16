@@ -14,4 +14,6 @@ public interface FileSystemManager {
     public File getRoot();
 
     public File moveTo(File sourceFile, File targetDir);
+
+    public void delete(File targetFile);
 }

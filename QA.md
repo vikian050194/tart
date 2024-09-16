@@ -2,6 +2,6 @@
 
 1. **Full re-rendering**
 
-   Q: *How to re-render whole app to get new added components?*
+   Q: *How to re-render whole app to get new added components? (AWT)*
 
    A: `setVisible(true);`

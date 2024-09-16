@@ -40,7 +40,7 @@ public final class Footer extends JComponent implements ChangeListener {
     }
 
     private String getText() {
-        var index = previousIndex > 0 ? previousIndex + 1 : 0;
+        var index = previousSize > 0 ? previousIndex + 1 : 0;
         var size = previousSize;
         return String.format("%s/%s", index, size);
     }

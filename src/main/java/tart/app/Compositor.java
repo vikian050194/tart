@@ -69,6 +69,10 @@ public final class Compositor implements ChangeListener {
                     nextImage();
                     break;
                 }
+                case KeyEvent.VK_DELETE: {
+                    deleteImage();
+                    break;
+                }
                 case KeyEvent.VK_0:
                 case KeyEvent.VK_1:
                 case KeyEvent.VK_2:
@@ -162,6 +166,10 @@ public final class Compositor implements ChangeListener {
                 }
                 case "Reset Zoom": {
                     zoomReset();
+                    break;
+                }
+                case "Delete": {
+                    deleteImage();
                     break;
                 }
                 default:
@@ -271,6 +279,7 @@ public final class Compositor implements ChangeListener {
         headerLayout.setRows(header.getComponents().length);
 
         makeFileMenu(menuHandler);
+        makeImageMenu(menuHandler);
         makeViewMenu(menuHandler);
 
         frame = new JFrame(title);
@@ -322,18 +331,30 @@ public final class Compositor implements ChangeListener {
         bar.add(file);
     }
 
-    private void makeViewMenu(MenuHandler handler) {
-        var view = new JMenu("View");
-        view.setMnemonic(KeyEvent.VK_V);
+    private void makeImageMenu(MenuHandler handler) {
+        var image = new JMenu("Image");
+        image.setMnemonic(KeyEvent.VK_V);
 
-        // TODO make separate menu for next/previous
-        var next = view.add(new JMenuItem("Next", KeyEvent.VK_N));
+        var next = image.add(new JMenuItem("Next", KeyEvent.VK_N));
         next.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK));
         next.addActionListener(handler);
 
-        var previous = view.add(new JMenuItem("Previous", KeyEvent.VK_P));
+        var previous = image.add(new JMenuItem("Previous", KeyEvent.VK_P));
         previous.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK));
         previous.addActionListener(handler);
+
+        image.addSeparator();
+
+        var delete = image.add(new JMenuItem("Delete", KeyEvent.VK_D));
+        delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK));
+        delete.addActionListener(handler);
+
+        bar.add(image);
+    }
+
+    private void makeViewMenu(MenuHandler handler) {
+        var view = new JMenu("View");
+        view.setMnemonic(KeyEvent.VK_V);
 
         var zoomIn = view.add(new JMenuItem("Zoom In", KeyEvent.VK_I));
         zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
@@ -361,6 +382,10 @@ public final class Compositor implements ChangeListener {
     private void nextImage() {
         // TODO use SwingWorker
         model.gotoNextFile();
+    }
+
+    private void deleteImage() {
+        model.deleteFile();
     }
 
     private void updateTitle() {

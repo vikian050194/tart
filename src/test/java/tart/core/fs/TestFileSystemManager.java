@@ -44,4 +44,9 @@ public class TestFileSystemManager implements FileSystemManager {
         sourceFile.renameTo(targetFile);
         return targetFile;
     }
+
+    @Override
+    public void delete(File targetFile) {
+
+    }
 }

@@ -6,9 +6,11 @@
 
 ## About
 
-**tart** is desktop application for images viewing and tagging.
+**tart** is desktop application for images viewing, searching, ordering and tagging.
 
 You can take a look at [list of questions and problems](./QA.md) that I faced during development.
+
+Also there is [todo list](./TODO.md).
 
 ## Motivation
 

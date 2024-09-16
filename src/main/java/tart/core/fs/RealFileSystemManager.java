@@ -89,4 +89,10 @@ public class RealFileSystemManager implements FileSystemManager {
 
         return sourceFile;
     }
+
+    @Override
+    public void delete(File targetFile) {
+        files.remove(targetFile);
+        targetFile.delete();
+    }
 }
