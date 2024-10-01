@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2024-10-01
+
+## Added
+
+- Application: logging to file
+
 ## [0.7.0] - 2024-09-16
 
 ### Added
@@ -91,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Select working directory
 - Show analysis: files type and name formats
 
-[Unreleased]: https://github.com/vikian050194/tart/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/vikian050194/tart/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/vikian050194/tart/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/vikian050194/tart/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/vikian050194/tart/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/vikian050194/tart/compare/v0.5.1...v0.6.0

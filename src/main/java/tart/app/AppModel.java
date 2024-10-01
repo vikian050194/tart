@@ -4,13 +4,12 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.event.*;
 import tart.app.components.filter.FilterModel;
 import tart.app.components.filter.Mask;
 import tart.core.fs.FileSystemManager;
+import tart.core.logger.Logger;
 import tart.core.matcher.InlineFileMatcher;
 import tart.core.matcher.data.FileMatcher86All;
 import tart.core.matcher.type.JpgFileMatcher;
@@ -280,7 +279,7 @@ public class AppModel {
             var image = ImageIO.read(file);
             return image;
         } catch (IOException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger().finest(ex.toString());
         }
 
         return null;

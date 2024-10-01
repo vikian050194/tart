@@ -6,16 +6,15 @@ import java.io.*;
 import static java.lang.Integer.parseInt;
 import java.util.*;
 import java.util.List;
-import java.util.logging.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import tart.app.components.Transporter;
 import tart.app.components.filter.*;
-import tart.app.components.filter.Filter;
 import tart.app.components.footer.*;
 import tart.app.components.zoom.*;
 import tart.core.fs.RealFileSystemManager;
+import tart.core.logger.Logger;
 
 public final class Compositor implements ChangeListener {
 
@@ -59,6 +58,9 @@ public final class Compositor implements ChangeListener {
         @Override
         public void keyPressed(KeyEvent ke) {
             var key = ke.getKeyCode();
+
+            var msg = String.format("%c key is pressed", (char) key);
+            Logger.getLogger().finest(msg);
 
             switch (key) {
                 case KeyEvent.VK_LEFT: {
@@ -126,26 +128,37 @@ public final class Compositor implements ChangeListener {
     class MenuHandler implements ActionListener {
 
         private void onOpen() {
+            Logger.getLogger().finest("open directory dialog is called");
+
             var fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fc.setAcceptAllFileFilterUsed(false);
             fc.setDialogTitle("Select directory with images");
 
             if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                model.scan(fc.getSelectedFile().getAbsolutePath());
+                var absPath = fc.getSelectedFile().getAbsolutePath();
+                model.scan(absPath);
 
                 // TODO refactor reset method usage - just set full array of empty values?
                 // TODO disable on close
                 transporter.setEnabled(true);
                 transporter.reset();
+
+                var msg = String.format("%s directory is selected", absPath);
+                Logger.getLogger().finest(msg);
             } else {
-// TODO show message
+                Logger.getLogger().finest("directory selection is failed");
+                // TODO show message
             }
         }
 
         @Override
         public void actionPerformed(ActionEvent ae) {
             var command = ae.getActionCommand();
+
+            var msg = String.format("%s action is performed", command);
+            Logger.getLogger().finest(msg);
+
             // TODO extract magic strings
             switch (command) {
                 case "Exit": {
@@ -184,8 +197,13 @@ public final class Compositor implements ChangeListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
+            Logger.getLogger().finest("transporter is called");
+
             var index = (String) ae.getActionCommand();
             var i = parseInt(index);
+
+            var msg = String.format("%d transporter is used", i);
+            Logger.getLogger().finest(msg);
 
             var button = (JButton) ae.getSource();
 
@@ -198,16 +216,16 @@ public final class Compositor implements ChangeListener {
             if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 var target = fc.getSelectedFile();
 
-                if (target.isFile()) {
-                    return;
-                }
-
                 directions.set(i, target);
 
                 button.setText(target.getName());
 
+                var successMsg = String.format("%d transporter target directory is %s", i, target.getAbsolutePath());
+                Logger.getLogger().finest(successMsg);
             } else {
-// TODO show message
+                // TODO show message
+                var failMsg = String.format("%d transporter target directory selection is failed", i);
+                Logger.getLogger().finest(failMsg);
             }
         }
 
@@ -220,7 +238,7 @@ public final class Compositor implements ChangeListener {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger().finest(ex.toString());
         }
 
         UIManager.getDefaults().put("ZoomComponentUI", BasicZoomUI.class.getName());
@@ -373,19 +391,24 @@ public final class Compositor implements ChangeListener {
 
     private void zoomReset() {
         zoomComp.getModel().setValue(DEFAULT_SCALE);
+        var msg = String.format("zoom is reseted to %d", DEFAULT_SCALE);
+        Logger.getLogger().finest(msg);
     }
 
     private void previousImage() {
         model.gotoPreviousFile();
+        Logger.getLogger().finest("previous image is selected");
     }
 
     private void nextImage() {
         // TODO use SwingWorker
         model.gotoNextFile();
+        Logger.getLogger().finest("next image is selected");
     }
 
     private void deleteImage() {
         model.deleteFile();
+        Logger.getLogger().finest("current image is deleted");
     }
 
     private void updateTitle() {
