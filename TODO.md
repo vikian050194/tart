@@ -24,6 +24,7 @@
 - [x] Add "transporter" key mapping in displayed text
 - [x] Use multiple file matchers
 - [x] Setup "transporter" target on first usage
+- [ ] Migrate to Web API
 - [ ] Add wildcard directory filtering mode
 - [ ] Add vertical/horizontal filter
 - [ ] Add "transporter" buttons re-set with Ctrl
