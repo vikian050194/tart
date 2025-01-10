@@ -105,10 +105,11 @@ public final class Compositor implements ChangeListener {
                         index = key - KeyEvent.VK_NUMPAD0;
                     }
 
-                    var direction = directions.get(index);
+                    File direction = directions.get(index);
 
                     if (direction == null) {
-                        return;
+                        transporter.getButton(index).doClick();
+                        direction = directions.get(index);
                     }
 
                     // TODO is scanner ready?
@@ -218,7 +219,7 @@ public final class Compositor implements ChangeListener {
 
                 directions.set(i, target);
 
-                button.setText(target.getName());
+                button.setText(String.format("%d: %s", i, target.getName()));
 
                 var successMsg = String.format("%d transporter target directory is %s", i, target.getAbsolutePath());
                 Logger.getLogger().finest(successMsg);
@@ -284,8 +285,6 @@ public final class Compositor implements ChangeListener {
         for (int i = 0; i < count; i++) {
             directions.add(null);
         }
-
-        dirsFilter.setEnabled(false);
 
         header.add(yearsFilter);
         header.add(monthsFilter);
@@ -419,7 +418,8 @@ public final class Compositor implements ChangeListener {
             var endDir = rootDirs[rootDirs.length - 1];
 
             if (model.getFile() != null) {
-                var fileName = model.getFile().getName();
+                // TODO getFile two times in a row
+                var fileName = model.getFile().getFile().getName();
 
                 elements.add(fileName);
             }

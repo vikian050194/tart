@@ -40,7 +40,7 @@ public final class Transporter extends JPanel {
 
         for (int i = 1; i <= count; i++) {
             var index = i % count;
-            var b = new JButton("select");
+            var b = new JButton(String.format("%d: select", index));
             b.setEnabled(enabled);
             b.setFocusable(false);
             // TODO extract font - make factory
@@ -61,5 +61,19 @@ public final class Transporter extends JPanel {
 
             button.setEnabled(e);
         }
+    }
+
+    public JButton getButton(int i) {
+        var targetActionCommand = String.valueOf(i);
+
+        for (Object o : buttons.getComponents()) {
+            var button = (JButton) o;
+
+            if (button.getActionCommand().equals(targetActionCommand)) {
+                return button;
+            }
+        }
+
+        return null;
     }
 }

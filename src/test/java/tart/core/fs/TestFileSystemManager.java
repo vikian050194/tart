@@ -3,34 +3,37 @@ package tart.core.fs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import tart.app.core.wrapper.FileWrapper;
 import tart.core.matcher.FileMatcher;
 
 public class TestFileSystemManager implements FileSystemManager {
 
     private boolean inspectResultValue = true;
-    public final List<File> files;
+    private File root;
+    public final List<FileWrapper> files;
 
     public TestFileSystemManager() {
         files = new ArrayList<>();
     }
 
-    public TestFileSystemManager(List<File> f) {
+    public TestFileSystemManager(List<FileWrapper> f) {
         files = f;
     }
 
     @Override
-    public boolean inspect(File dir, FileMatcher fileMather) {
+    public boolean inspect(File dir, List<FileMatcher> matcher) {
+        root = dir;
         return inspectResultValue;
     }
 
     @Override
-    public List<File> getFiles() {
+    public List<FileWrapper> getFiles() {
         return new ArrayList(files);
     }
 
     @Override
     public File getRoot() {
-        return new File("test");
+        return root;
     }
 
     public void setInspectReturnValue(boolean v) {
@@ -46,7 +49,7 @@ public class TestFileSystemManager implements FileSystemManager {
     }
 
     @Override
-    public void delete(File targetFile) {
+    public void delete(FileWrapper targetFile) {
 
     }
 }

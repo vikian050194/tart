@@ -4,9 +4,19 @@ import java.util.Objects;
 
 public class Mask {
 
-    public String text;
+    private String text;
+    private String value;
     public boolean enabled;
     public boolean selected;
+
+    public Mask(String t) {
+        this(t, false, false);
+    }
+
+    public Mask(String v, String t) {
+        this(t, false, false);
+        value = v;
+    }
 
     public Mask(String t, boolean e, boolean s) {
         text = t;
@@ -14,8 +24,21 @@ public class Mask {
         selected = s;
     }
 
-    public Mask(String t) {
-        this(t, false, false);
+    public Mask(String v, String t, boolean e, boolean s) {
+        this(t, e, s);
+        value = v;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getValue() {
+        if (value != null) {
+            return value;
+        }
+
+        return text;
     }
 
     @Override

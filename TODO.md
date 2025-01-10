@@ -20,7 +20,18 @@
 - [x] MVC
 - [x] Add delete image keyboard support
 - [x] Add logging to file
-- [ ] Add filter "root directory"
+- [x] Implement simple directory filter
+- [x] Add "transporter" key mapping in displayed text
+- [x] Use multiple file matchers
+- [x] Setup "transporter" target on first usage
+- [ ] Add wildcard directory filtering mode
+- [ ] Add vertical/horizontal filter
+- [ ] Add "transporter" buttons re-set with Ctrl
+- [ ] Автоматическое открытие последней директории
+- [ ] Сохранение и загрузка состояния фильтров и направлений перемещения
+- [ ] Мануальный поворот
+- [ ] Автоматический поворот
+- [ ] Группировка фотографий по времени
 - [ ] Add app version to UI
 - [ ] Add structured log to file
 - [ ] Use full ISO time format for logging
@@ -30,13 +41,9 @@
 - [ ] Add "moved" counter
 - [ ] Make `snap` distribution
 - [ ] Make `deb` distribution
-- [ ] Автоматическое открытие последней директории
-- [ ] Сохранение и загрузка состояния фильтров и направлений перемещения
 - [ ] Разметка фото
   - [ ] Назначение тега
   - [ ] Удаление тега
-- [ ] Мануальный поворот
-- [ ] Автоматический поворот
 - [ ] Сохранение поворота
 - [ ] Перемещение по увеличенному фото
 - [ ] Просмотр фото в гриде
@@ -48,7 +55,6 @@
   - [ ] Указание родительского тега
 - [ ] Дерево директорий
 - [ ] Список из последних 10 открытых директорий
-- [ ] Группировка фотографий по времени
 
 ## Backlog
 

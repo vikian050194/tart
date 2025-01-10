@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.app.core.wrapper.FileWrapper;
+import tart.app.core.wrapper.FileWrapper86;
 import tart.core.fs.TestFileSystemManager;
 
 public class AppModelGoToFileTests {
@@ -27,9 +29,9 @@ public class AppModelGoToFileTests {
     @Test
     public void nextFile() {
         // Arrange
-        var f = new ArrayList<File>();
-        f.add(new File("20240101_120000.png"));
-        f.add(new File("20240103_120000.jpg"));
+        var f = new ArrayList<FileWrapper>();
+        f.add(new FileWrapper86("20240101_120000.png"));
+        f.add(new FileWrapper86("20240103_120000.jpg"));
         var fsm = new TestFileSystemManager(f);
         var s = new AppModel(fsm);
         var expected = f.get(1);
@@ -62,9 +64,9 @@ public class AppModelGoToFileTests {
     @Test
     public void previousFile() {
         // Arrange
-        var f = new ArrayList<File>();
-        f.add(new File("20240101_120000.png"));
-        f.add(new File("20240103_120000.jpg"));
+        var f = new ArrayList<FileWrapper>();
+        f.add(new FileWrapper86("20240101_120000.png"));
+        f.add(new FileWrapper86("20240103_120000.jpg"));
         var fsm = new TestFileSystemManager(f);
         var s = new AppModel(fsm);
         var expected = f.get(1);
@@ -81,9 +83,9 @@ public class AppModelGoToFileTests {
     @Test
     public void previousFileNonInitial() {
         // Arrange
-        var f = new ArrayList<File>();
-        f.add(new File("20240101_120000.png"));
-        f.add(new File("20240103_120000.jpg"));
+        var f = new ArrayList<FileWrapper>();
+        f.add(new FileWrapper86("20240101_120000.png"));
+        f.add(new FileWrapper86("20240103_120000.jpg"));
         var fsm = new TestFileSystemManager(f);
         var s = new AppModel(fsm);
         var expected = f.get(0);

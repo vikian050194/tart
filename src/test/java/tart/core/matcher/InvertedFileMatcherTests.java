@@ -15,7 +15,7 @@ public class InvertedFileMatcherTests {
         var expected = false;
 
         // Act
-        var actual = invertedFileMatcher.isMatch(testFile);
+        var actual = invertedFileMatcher.isNameMatch(testFile);
 
         // Assert
         assertEquals(actual, expected);
@@ -30,7 +30,7 @@ public class InvertedFileMatcherTests {
         var expected = true;
 
         // Act
-        var actual = invertedFileMatcher.isMatch(testFile);
+        var actual = invertedFileMatcher.isNameMatch(testFile);
 
         // Assert
         assertEquals(actual, expected);

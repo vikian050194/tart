@@ -1,8 +1,8 @@
 package tart.app.components.filter;
 
 import java.util.List;
-import java.util.stream.Stream;
 import tart.app.AppModel;
+import tart.core.logger.Logger;
 
 public class DirFilter extends Filter {
 
@@ -12,25 +12,20 @@ public class DirFilter extends Filter {
 
     @Override
     void addMask(String m) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        model.addDirFilter(m);
+        var msg = String.format("%s dir mask is added", m);
+        Logger.getLogger().finest(msg);
     }
 
     @Override
     void removeMask(String m) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        model.removeDirFilter(m);
+        var msg = String.format("%s dir mask is removed", m);
+        Logger.getLogger().finest(msg);
     }
 
     @Override
     List<Mask> getValues() {
-        var file = model.getFile();
-
-        var pathChunks = file.getAbsolutePath()
-                .substring(model.getRoot().getAbsolutePath().length())
-                .split("/");
-        var partChunksStream = Stream.of(pathChunks)
-                .filter(c -> !c.isEmpty() && !c.equals(file.getName()))
-                .map((p) -> new Mask(p, false, false));
-
-        return partChunksStream.toList();
+        return model.getDirs();
     }
 }

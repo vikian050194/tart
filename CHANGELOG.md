@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2025-01-10
+
+### Added
+
+- Header: directory filter
+- Header: display key mapping for "transporter" buttons as text
+- Application: Ctrl+[0-9] to re-set "transporter" target directory
+
+### Changed
+
+- Application: set "transporter" target directory on first usage
+- Application: handle images following 86 and 42 name patterns
+
 ## [0.8.0] - 2024-10-01
 
-## Added
+### Added
 
 - Application: logging to file
 
@@ -97,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Select working directory
 - Show analysis: files type and name formats
 
-[Unreleased]: https://github.com/vikian050194/tart/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/vikian050194/tart/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/vikian050194/tart/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/vikian050194/tart/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/vikian050194/tart/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/vikian050194/tart/compare/v0.6.0...v0.6.1

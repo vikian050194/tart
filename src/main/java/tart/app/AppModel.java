@@ -3,15 +3,19 @@ package tart.app;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.event.*;
 import tart.app.components.filter.FilterModel;
 import tart.app.components.filter.Mask;
+import tart.app.core.wrapper.FileWrapper;
 import tart.core.fs.FileSystemManager;
 import tart.core.logger.Logger;
 import tart.core.matcher.InlineFileMatcher;
-import tart.core.matcher.data.FileMatcher86All;
+import tart.core.matcher.data.FileMatcher42;
+import tart.core.matcher.data.FileMatcher86;
 import tart.core.matcher.type.JpgFileMatcher;
 
 public class AppModel {
@@ -19,6 +23,7 @@ public class AppModel {
     private static final String YEAR_MASK = "20\\d{2}";
     private static final String MONTH_MASK = "\\d{2}";
     private static final String DAY_MASK = "\\d{2}";
+    private static final String DIR_MASK = ".*";
 
     protected ChangeEvent changeEvent = null;
     protected EventListenerList listenerList = new EventListenerList();
@@ -29,7 +34,7 @@ public class AppModel {
     private boolean ready;
 
     private final FileSystemManager fsManager;
-    private final List<File> filFiles = new ArrayList<>();
+    private final List<FileWrapper> filFiles = new ArrayList<>();
 
     private boolean isYearsUpdated = false;
     private boolean isMonthsUpdated = false;
@@ -43,9 +48,12 @@ public class AppModel {
     private final List<String> availableMonths = new ArrayList<>();
     private final List<String> availableDays = new ArrayList<>();
 
+    private final List<String> selectedDirs = new ArrayList<>();
+
     private final FilterModel yearsFilter = new FilterModel(YEAR_MASK);
     private final FilterModel monthsFilter = new FilterModel(MONTH_MASK);
     private final FilterModel daysFilter = new FilterModel(DAY_MASK);
+    private final FilterModel dirFilter = new FilterModel(DIR_MASK);
 
     public AppModel(FileSystemManager fsm) {
         fsManager = fsm;
@@ -53,29 +61,35 @@ public class AppModel {
 
     public void filter() {
         // TODO is it possible to remove this boilerplate array creating?
-        var prevFil = new File[filFiles.size()];
-        filFiles.toArray(prevFil);
+        var prevFil = List.copyOf(filFiles);
         filFiles.clear();
+
+        var dirMask = dirFilter.get().get(0);
+
+        if (!dirFilter.isEmpty()) {
+//            dirMask = String.format("%s/.*$", dirMask); // soft mode
+            dirMask = String.format("%s/[^/]*\\..*$", dirMask); // strict mode
+        }
+
+        var matcher = new InlineFileMatcher(dirMask);
 
         for (String yearMask : yearsFilter.get()) {
             for (String monthMask : monthsFilter.get()) {
                 for (String dayMask : daysFilter.get()) {
-                    var stringPattern = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
-                    var matcher = new InlineFileMatcher(stringPattern);
+                    var datePatternSource = String.format("%s%s%s.*", yearMask, monthMask, dayMask);
+                    var pattern = Pattern.compile(datePatternSource, Pattern.CASE_INSENSITIVE);
 
                     var result = fsManager.getFiles().stream()
-                            .filter((f) -> matcher.isMatch(f));
+                            .filter((f) -> matcher.isAbsoluteMatch(f.getFile()) && pattern.matcher(f.getTimestamp().format(DateTimeFormatter.BASIC_ISO_DATE)).matches());
                     filFiles.addAll(result.toList());
                 }
             }
         }
 
-        filFiles.sort((a, b) -> a.getName().compareTo(b.getName()));
+        filFiles.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
-        // TODO is it possible to remove this boilerplate array creating?
-        var newFil = new File[filFiles.size()];
-        filFiles.toArray(newFil);
-        var updated = !Arrays.equals(prevFil, newFil);
+        var newFil = filFiles;
+        var updated = !prevFil.equals(newFil);
 
         if (updated) {
             index = 0;
@@ -89,21 +103,18 @@ public class AppModel {
     }
 
     private void updateAvailableValues() {
-        var prevYears = new String[availableYears.size()];
-        availableYears.toArray(prevYears);
-        var prevMonths = new String[availableMonths.size()];
-        availableMonths.toArray(prevMonths);
-        var prevDays = new String[availableDays.size()];
-        availableDays.toArray(prevDays);
+        var prevYears = List.copyOf(availableYears);
+        var prevMonths = List.copyOf(availableMonths);
+        var prevDays = List.copyOf(availableDays);
 
         List<String> newYears = new ArrayList<>();
         List<String> newMonths = new ArrayList<>();
         List<String> newDays = new ArrayList<>();
 
-        for (File f : filFiles) {
-            var year = f.getName().substring(0, 4);
-            var month = f.getName().substring(4, 6);
-            var day = f.getName().substring(6, 8);
+        for (FileWrapper f : filFiles) {
+            var year = String.valueOf(f.getYear());
+            var month = String.format("%02d", f.getMonth());
+            var day = String.format("%02d", f.getDay());
 
             if (!newYears.contains(year)) {
                 newYears.add(year);
@@ -122,23 +133,19 @@ public class AppModel {
         availableYears.clear();
         availableYears.addAll(newYears);
         availableYears.sort((a, b) -> a.compareTo(b));
-        var years = new String[availableYears.size()];
-        availableYears.toArray(years);
-        isYearsUpdated = isYearsUpdated || !Arrays.equals(prevYears, years);
+        isYearsUpdated = isYearsUpdated || !prevYears.equals(newYears);
 
         availableMonths.clear();
         availableMonths.addAll(newMonths);
         availableMonths.sort((a, b) -> a.compareTo(b));
-        var months = new String[availableMonths.size()];
-        availableMonths.toArray(months);
-        isMonthsUpdated = isMonthsUpdated || !Arrays.equals(prevMonths, months);
+        isMonthsUpdated = isMonthsUpdated || !prevMonths.equals(newMonths);
 
         availableDays.clear();
         availableDays.addAll(newDays);
         availableDays.sort((a, b) -> a.compareTo(b));
-        var days = new String[availableDays.size()];
-        availableDays.toArray(days);
-        isDaysUpdated = isDaysUpdated || !Arrays.equals(prevDays, days);
+        isDaysUpdated = isDaysUpdated || !prevDays.equals(newDays);
+
+        // TODO update dir filter
     }
 
     // TODO extract common with updateAvailableValues code
@@ -147,10 +154,10 @@ public class AppModel {
         List<String> newMonths = new ArrayList<>();
         List<String> newDays = new ArrayList<>();
 
-        for (File f : fsManager.getFiles()) {
-            var year = f.getName().substring(0, 4);
-            var month = f.getName().substring(4, 6);
-            var day = f.getName().substring(6, 8);
+        for (FileWrapper f : fsManager.getFiles()) {
+            var year = String.valueOf(f.getYear());
+            var month = String.format("%02d", f.getMonth());
+            var day = String.format("%02d", f.getDay());
 
             if (!newYears.contains(year)) {
                 newYears.add(year);
@@ -169,20 +176,16 @@ public class AppModel {
         possibleYears.clear();
         possibleYears.addAll(newYears);
         possibleYears.sort((a, b) -> a.compareTo(b));
-        var years = new String[possibleYears.size()];
-        possibleYears.toArray(years);
 
         possibleMonths.clear();
         possibleMonths.addAll(newMonths);
         possibleMonths.sort((a, b) -> a.compareTo(b));
-        var months = new String[possibleMonths.size()];
-        possibleMonths.toArray(months);
 
         possibleDays.clear();
         possibleDays.addAll(newDays);
         possibleDays.sort((a, b) -> a.compareTo(b));
-        var days = new String[possibleDays.size()];
-        possibleDays.toArray(days);
+
+        // TODO update dir filter
     }
 
     private void reset() {
@@ -209,6 +212,7 @@ public class AppModel {
         yearsFilter.clear();
         monthsFilter.clear();
         daysFilter.clear();
+        dirFilter.clear();
     }
 
     /**
@@ -219,8 +223,12 @@ public class AppModel {
         reset();
 
         var rootDir = new File(dir);
-
-        ready = fsManager.inspect(rootDir, new FileMatcher86All(new JpgFileMatcher()));
+        // TODO support few file matchers
+        var matchers = List.of(
+                new FileMatcher86(new JpgFileMatcher()),
+                new FileMatcher42(new JpgFileMatcher())
+        );
+        ready = fsManager.inspect(rootDir, matchers);
 
         if (ready) {
             updatePossibleValues();
@@ -264,7 +272,7 @@ public class AppModel {
         fireStateChanged();
     }
 
-    public File getFile() {
+    public FileWrapper getFile() {
         if (filFiles.isEmpty()) {
             return null;
         }
@@ -276,7 +284,7 @@ public class AppModel {
         var file = getFile();
 
         try {
-            var image = ImageIO.read(file);
+            var image = ImageIO.read(file.getFile());
             return image;
         } catch (IOException ex) {
             Logger.getLogger().finest(ex.toString());
@@ -290,7 +298,8 @@ public class AppModel {
             return;
         }
 
-        filFiles.set(index, newFile);
+        // TODO refactoring is needed - set-get-clone looks awkward
+        filFiles.set(index, filFiles.get(index).cloneWith(newFile));
     }
 
     public File getRoot() {
@@ -323,6 +332,78 @@ public class AppModel {
                 .toList();
     }
 
+    public List<Mask> getDirs() {
+        var delimiter = "/";
+
+        var values = new ArrayList<Mask>();
+        List<String> currentMaskChunks;
+
+        if (dirFilter.isEmpty()) {
+            currentMaskChunks = List.of();
+        } else {
+            var currentMask = dirFilter.get().get(0);
+            // TODO is it needed to filter values !p.isEmpty()?
+            currentMaskChunks = Arrays.stream(currentMask.split(delimiter)).filter(p -> !p.isEmpty()).toList();
+        }
+
+        var file = getFile();
+        // TODO get delimenter value for current OS
+        var pathChunks = file.getFile().getAbsolutePath()
+                .substring(getRoot().getParentFile().getAbsolutePath().length())
+                .split(delimiter);
+        var depthToParent = getRoot().getParentFile().getAbsolutePath()
+                .split(delimiter).length - 1;
+        // TODO is it needed to filter values !p.isEmpty()?
+        var valuableChunks = Arrays.stream(pathChunks).filter(p -> !p.isEmpty() || p.equals(file.getFile().getName())).toList();
+
+        var prefix = getRoot().getParentFile().getAbsolutePath();
+
+        var lastSelected = false;
+
+        for (int i = 0; i < valuableChunks.size() - 1; i++) {
+            var text = valuableChunks.get(i);
+            var value = new StringBuilder(valuableChunks.size() * 2);
+            value.append(prefix);
+            value.append(delimiter);
+
+            var selected = false;
+
+            if (currentMaskChunks.size() > i + depthToParent) {
+                selected = text.equals(currentMaskChunks.get(i + depthToParent));
+            }
+
+            // TODO fix dir filters re-rendering after file moving
+            // selected directory is disablem instead of selected
+            if (lastSelected && !selected) {
+                for (int j = 0; j < i; j++) {
+                    values.get(j).enabled = false;
+                }
+            }
+
+            if (i == valuableChunks.size() - 2 && selected) {
+                for (int j = 0; j < i; j++) {
+                    values.get(j).enabled = false;
+                }
+            }
+
+            lastSelected = selected;
+
+            for (int j = 0; j <= i; j++) {
+                String pathChunk = valuableChunks.get(j);
+                value.append(pathChunk);
+
+                if (j < i) {
+                    value.append(delimiter);
+                }
+            }
+
+            var newMask = new Mask(value.toString(), text, true, selected);
+            values.add(newMask);
+        }
+
+        return values;
+    }
+
     public void addYearFilter(String mask) {
         if (yearsFilter.add(mask)) {
             filter();
@@ -337,6 +418,15 @@ public class AppModel {
 
     public void addDayFilter(String mask) {
         if (daysFilter.add(mask)) {
+            filter();
+        }
+    }
+
+    public void addDirFilter(String mask) {
+        // TODO remove this hack
+        dirFilter.clear();
+
+        if (dirFilter.add(mask)) {
             filter();
         }
     }
@@ -359,10 +449,16 @@ public class AppModel {
         }
     }
 
+    public void removeDirFilter(String mask) {
+        if (dirFilter.remove(mask)) {
+            filter();
+        }
+    }
+
     public void moveTo(File target) {
         // TODO add unit tests
         var file = getFile();
-        var newFile = fsManager.moveTo(file, target);
+        var newFile = fsManager.moveTo(file.getFile(), target);
         setFile(newFile);
 
         fireStateChanged();

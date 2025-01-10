@@ -6,15 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import tart.app.core.wrapper.FileWrapper;
 import tart.core.matcher.FileMatcher;
 
 public class RealFileSystemManager implements FileSystemManager {
 
     // TODO how to unit test this class?
-    private final ArrayList<File> files = new ArrayList<>();
+    private final ArrayList<FileWrapper> files = new ArrayList<>();
     private File root;
     private boolean changed = false;
-    private FileMatcher lastFileMatcher;
+    private List<FileMatcher> matchers;
 
     private List<File> listFiles(File dir, FileMatcher fileMatcher) {
         var result = new ArrayList<File>();
@@ -28,7 +29,7 @@ public class RealFileSystemManager implements FileSystemManager {
                     .collect(Collectors.toList());
             queue.addAll(dirs);
             var currentDirFiles = Stream.of(currentDir.listFiles())
-                    .filter(file -> !file.isDirectory() && fileMatcher.isMatch(file))
+                    .filter(file -> !file.isDirectory() && fileMatcher.isNameMatch(file))
                     .collect(Collectors.toList());
             result.addAll(currentDirFiles);
         }
@@ -37,7 +38,7 @@ public class RealFileSystemManager implements FileSystemManager {
     }
 
     @Override
-    public boolean inspect(File dir, FileMatcher fileMatcher) {
+    public boolean inspect(File dir, List<FileMatcher> matchers) {
         if (!dir.exists()) {
             // TODO remove System.out
             System.out.printf("%s is not found%n", dir);
@@ -51,24 +52,28 @@ public class RealFileSystemManager implements FileSystemManager {
         }
 
         files.clear();
-        files.addAll(listFiles(dir, fileMatcher));
-        files.sort((a, b) -> a.getName().compareTo(b.getName()));
+
+        for (FileMatcher matcher : matchers) {
+            files.addAll(listFiles(dir, matcher).stream().map((f) -> matcher.wrap(f)).toList());
+        }
+
+        files.sort((a, b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
         root = dir;
-        lastFileMatcher = fileMatcher;
+        this.matchers = matchers;
 
         return !files.isEmpty();
     }
 
     @Override
-    public List<File> getFiles() {
+    public List<FileWrapper> getFiles() {
         if (changed) {
             // TODO refactor this non optimal last file mather storing
             // TODO full inspect is heavy - update only changed File?
-            inspect(root, lastFileMatcher);
+            inspect(root, matchers);
         }
 
-        return new ArrayList<>(files);
+        return files;
     }
 
     @Override
@@ -91,8 +96,9 @@ public class RealFileSystemManager implements FileSystemManager {
     }
 
     @Override
-    public void delete(File targetFile) {
+    public void delete(FileWrapper targetFile) {
+        // TODO what is safest way to remove T instance from ArrayList<T> where T is class?
         files.remove(targetFile);
-        targetFile.delete();
+        targetFile.getFile().delete();
     }
 }

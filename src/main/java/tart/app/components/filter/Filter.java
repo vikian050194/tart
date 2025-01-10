@@ -17,10 +17,16 @@ import tart.app.AppModel;
 
 public abstract class Filter extends JPanel implements ActionListener, ChangeListener {
 
+    enum LogicalType {
+        AND,
+        OR
+    }
+
     private boolean enabled;
     protected final AppModel model;
     private final JPanel buttons;
     protected final List<Mask> previousValues;
+    private LogicalType logicalType = LogicalType.AND;
 
     public Filter(String n, AppModel m) {
         enabled = true;
@@ -66,21 +72,15 @@ public abstract class Filter extends JPanel implements ActionListener, ChangeLis
         setButtons(previousValues);
     }
 
-    public void setButtons(List<Mask> values) {
+    public void setButtons(List<Mask> masks) {
         buttons.removeAll();
 
-        var all = new JToggleButton("ALL");
-        all.setFocusable(false);
-        all.addActionListener(this);
-        all.setEnabled(false);
-        all.setFont(new Font("Dialog", Font.BOLD, 12));
-        buttons.add(all);
+        for (Mask mask : masks) {
+            var newButton = new JToggleButton(mask.getText());
 
-        for (Mask value : values) {
-            var newButton = new JToggleButton(value.text);
-
-            newButton.setSelected(value.selected);
-            newButton.setEnabled(value.enabled);
+            newButton.setSelected(mask.selected);
+            newButton.setEnabled(mask.enabled);
+            newButton.setActionCommand(mask.getValue());
             newButton.setFont(new Font("Dialog", Font.PLAIN, 12));
             newButton.setFocusable(false);
             newButton.addActionListener(this);

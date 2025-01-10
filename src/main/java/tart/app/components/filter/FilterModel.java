@@ -5,8 +5,8 @@ import java.util.List;
 
 public class FilterModel {
 
-    private final List<String> items = new ArrayList<>();
-    private final String defaultMask;
+    protected final List<String> items = new ArrayList<>();
+    protected final String defaultMask;
 
     public FilterModel(String d) {
         defaultMask = d;
