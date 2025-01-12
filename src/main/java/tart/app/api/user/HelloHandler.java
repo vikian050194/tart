@@ -47,7 +47,7 @@ public class HelloHandler extends Handler {
         var params = splitQuery(uri.getRawQuery());
         var noNameText = "Anonymous";
         var name = params.getOrDefault("name", List.of(noNameText)).stream().findFirst().orElse(noNameText);
-        var response = String.format("Hello %s!", name);
+        var response = String.format("Hello, %s!", name);
 
         return new ResponseEntity<>(response,
                 getHeaders(Constants.CONTENT_TYPE, Constants.TEXT_HTML), StatusCode.OK);

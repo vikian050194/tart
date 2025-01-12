@@ -12,9 +12,9 @@ import tart.app.api.StatusCode;
 import tart.app.errors.ApplicationExceptions;
 import tart.app.errors.GlobalExceptionHandler;
 
-public class FooHandler extends Handler {
+public class ImageHandler extends Handler {
 
-    public FooHandler(ObjectMapper objectMapper,
+    public ImageHandler(ObjectMapper objectMapper,
             GlobalExceptionHandler exceptionHandler) {
         super(objectMapper, exceptionHandler);
     }
