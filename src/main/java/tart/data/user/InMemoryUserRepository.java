@@ -1,11 +1,11 @@
-package tart.app.data.user;
+package tart.data.user;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import tart.app.domain.user.NewUser;
-import tart.app.domain.user.User;
-import tart.app.domain.user.UserRepository;
+import tart.domain.user.NewUser;
+import tart.domain.user.User;
+import tart.domain.user.UserRepository;
 
 public class InMemoryUserRepository implements UserRepository {
 

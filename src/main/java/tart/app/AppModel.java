@@ -8,8 +8,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.event.*;
-import tart.app.components.filter.FilterModel;
-import tart.app.components.filter.Mask;
 import tart.app.core.wrapper.FileWrapper;
 import tart.core.fs.FileSystemManager;
 import tart.core.logger.Logger;
@@ -47,8 +45,6 @@ public class AppModel {
     private final List<String> availableYears = new ArrayList<>();
     private final List<String> availableMonths = new ArrayList<>();
     private final List<String> availableDays = new ArrayList<>();
-
-    private final List<String> selectedDirs = new ArrayList<>();
 
     private final FilterModel yearsFilter = new FilterModel(YEAR_MASK);
     private final FilterModel monthsFilter = new FilterModel(MONTH_MASK);

@@ -1,6 +1,6 @@
 package tart.core;
 
-import tart.app.components.filter.FilterModel;
+import tart.app.FilterModel;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

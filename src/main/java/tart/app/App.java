@@ -1,14 +1,12 @@
 package tart.app;
 
+import tart.app.api.hello.HelloHandler;
+import tart.app.api.image.ImageHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import static tart.app.Configuration.getErrorHandler;
-import static tart.app.Configuration.getObjectMapper;
-import static tart.app.Configuration.getUserService;
-import tart.app.api.user.HelloHandler;
-import tart.app.api.user.ImageHandler;
-import tart.app.api.user.RegistrationHandler;
+import static tart.app.Configuration.*;
+import tart.app.api.user.*;
 
 public final class App {
 
@@ -22,7 +20,7 @@ public final class App {
                 getErrorHandler());
         server.createContext("/api/users/register", registrationHandler::handle);
 
-        var imageHandler = new ImageHandler(getObjectMapper(),
+        var imageHandler = new ImageHandler(getImageService(), getObjectMapper(),
                 getErrorHandler());
         server.createContext("/api/image", imageHandler::handle);
 

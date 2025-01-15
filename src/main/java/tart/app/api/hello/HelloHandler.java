@@ -1,4 +1,4 @@
-package tart.app.api.user;
+package tart.app.api.hello;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;

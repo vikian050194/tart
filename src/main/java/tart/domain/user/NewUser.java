@@ -1,13 +1,12 @@
-package tart.app.domain.user;
+package tart.domain.user;
 
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-public class User {
+public class NewUser {
 
-    String id;
     String login;
     String password;
 }

@@ -1,4 +1,4 @@
-package tart.app.components.filter;
+package tart.app;
 
 import java.util.ArrayList;
 import java.util.List;

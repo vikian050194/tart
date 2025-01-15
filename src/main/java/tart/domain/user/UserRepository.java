@@ -1,4 +1,4 @@
-package tart.app.domain.user;
+package tart.domain.user;
 
 public interface UserRepository {
 

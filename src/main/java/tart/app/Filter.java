@@ -1,4 +1,4 @@
-package tart.app.components.filter;
+package tart.app;
 
 import java.awt.FlowLayout;
 import java.awt.Font;

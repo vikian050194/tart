@@ -1,4 +1,4 @@
-package tart.app.components.filter;
+package tart.app;
 
 import java.util.Objects;
 

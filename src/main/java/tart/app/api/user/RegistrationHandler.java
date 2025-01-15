@@ -9,8 +9,8 @@ import tart.app.api.Constants;
 import tart.app.api.Handler;
 import tart.app.api.ResponseEntity;
 import tart.app.api.StatusCode;
-import tart.app.domain.user.NewUser;
-import tart.app.domain.user.UserService;
+import tart.domain.user.NewUser;
+import tart.domain.user.UserService;
 import tart.app.errors.ApplicationExceptions;
 import tart.app.errors.GlobalExceptionHandler;
 

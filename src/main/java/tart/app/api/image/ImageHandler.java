@@ -1,22 +1,25 @@
-package tart.app.api.user;
+package tart.app.api.image;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import tart.app.api.Constants;
-import tart.app.api.Handler;
-import tart.app.api.ResponseEntity;
-import tart.app.api.StatusCode;
-import tart.app.errors.ApplicationExceptions;
-import tart.app.errors.GlobalExceptionHandler;
+import tart.app.api.*;
+import tart.app.errors.*;
+import tart.domain.image.ImageService;
 
 public class ImageHandler extends Handler {
 
-    public ImageHandler(ObjectMapper objectMapper,
-            GlobalExceptionHandler exceptionHandler) {
+    private final ImageService imageService;
+    
+    public ImageHandler(
+            ImageService imageService,
+            ObjectMapper objectMapper,
+            GlobalExceptionHandler exceptionHandler
+    ) {
         super(objectMapper, exceptionHandler);
+        this.imageService = imageService;
     }
 
     @Override
