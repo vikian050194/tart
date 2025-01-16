@@ -1,4 +1,4 @@
-package tart.core.fs;
+package tart.domain.image;
 
 import java.io.File;
 import java.util.List;

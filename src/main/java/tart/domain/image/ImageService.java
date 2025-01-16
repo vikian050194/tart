@@ -1,6 +1,5 @@
 package tart.domain.image;
 
-import java.util.List;
 import tart.app.core.wrapper.FileWrapper;
 import tart.domain.user.*;
 
@@ -12,8 +11,8 @@ public class ImageService {
         imageRepository = ir;
     }
     
-    public List<FileWrapper> get10(){
-        return imageRepository.get10();
+    public FileWrapper getImage(){
+        return imageRepository.getImage();
     }
     
     public String create(NewUser user) {

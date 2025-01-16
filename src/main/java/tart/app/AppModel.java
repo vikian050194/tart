@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.event.*;
 import tart.app.core.wrapper.FileWrapper;
-import tart.core.fs.FileSystemManager;
+import tart.domain.image.FileSystemManager;
 import tart.core.logger.Logger;
 import tart.core.matcher.InlineFileMatcher;
 import tart.core.matcher.data.FileMatcher42;

@@ -1,5 +1,6 @@
 package tart.core.fs;
 
+import tart.domain.image.RealFileSystemManager;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;

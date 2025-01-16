@@ -1,5 +1,6 @@
 package tart.core.fs;
 
+import tart.domain.image.FileSystemManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

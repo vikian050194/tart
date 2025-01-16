@@ -12,7 +12,7 @@ import tart.domain.image.ImageService;
 public class ImageHandler extends Handler {
 
     private final ImageService imageService;
-    
+
     public ImageHandler(
             ImageService imageService,
             ObjectMapper objectMapper,
@@ -45,13 +45,12 @@ public class ImageHandler extends Handler {
     }
 
     private ResponseEntity<byte[]> doGet() throws IOException {
-        var filepath = "/home/kirill/Phot/20230901_170650.jpg";
-        byte[] bytes;
 
-        try (RandomAccessFile f = new RandomAccessFile(filepath, "r")) {
-            bytes = new byte[(int) f.length()];
-            f.read(bytes);
-        }
+        var file = imageService.getImage();
+
+        RandomAccessFile f = new RandomAccessFile(file.getFile().getAbsolutePath(), "r");
+        byte[] bytes = new byte[(int) f.length()];
+        f.readFully(bytes);
 
         return new ResponseEntity<>(bytes,
                 getHeaders(Constants.CONTENT_TYPE, Constants.IMAGE_JPEG), StatusCode.OK);
