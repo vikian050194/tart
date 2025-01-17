@@ -1,42 +1,44 @@
-package tart.app;
+package tart.domain.image;
 
+import tart.data.image.TestImageRepository;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.app.Mask;
 import tart.app.core.wrapper.FileWrapper;
 import tart.app.core.wrapper.FileWrapper86;
-import tart.core.fs.TestFileSystemManager;
+import tart.domain.image.ImageService;
 
-public class AppModelAddMonthFilterTests {
+public class ImageServiceAddDayFilterTests {
 
     @Test
     public void updated() {
         // Arrange
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
-        f.add(new FileWrapper86("20240201_120000.jpg"));
-        f.add(new FileWrapper86("20240301_120000.jpeg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        f.add(new FileWrapper86("20240103_120000.jpg"));
+        f.add(new FileWrapper86("20240105_120000.jpeg"));
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expectedDays = List.of(
-                new Mask("01", true, false)
+                new Mask("01", false, false),
+                new Mask("03", true, true),
+                new Mask("05", false, false)
         );
         var expectedMonths = List.of(
-                new Mask("01", true, true),
-                new Mask("02", false, false),
-                new Mask("03", false, false)
+                new Mask("01", true, false)
         );
         var expectedYears = List.of(
                 new Mask("2024", true, false)
         );
 
         // Act
-        s.scan("test");
-        s.addMonthFilter("01");
-        var actualDays = s.getDays();
-        var actualMonths = s.getMonths();
-        var actualYears = s.getYears();
+        is.scan("test");
+        is.addDayFilter("03");
+        var actualDays = is.getDays();
+        var actualMonths = is.getMonths();
+        var actualYears = is.getYears();
 
         // Assert
         assertEquals(expectedDays, actualDays);

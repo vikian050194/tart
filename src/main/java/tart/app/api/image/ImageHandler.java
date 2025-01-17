@@ -46,7 +46,8 @@ public class ImageHandler extends Handler {
 
     private ResponseEntity<byte[]> doGet() throws IOException {
 
-        var file = imageService.getImage();
+        imageService.scan("/home/kirill/Phot");
+        var file = imageService.getFile();
 
         RandomAccessFile f = new RandomAccessFile(file.getFile().getAbsolutePath(), "r");
         byte[] bytes = new byte[(int) f.length()];

@@ -1,14 +1,16 @@
-package tart.app;
+package tart.domain.image;
 
+import tart.data.image.TestImageRepository;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.app.Mask;
 import tart.app.core.wrapper.FileWrapper;
 import tart.app.core.wrapper.FileWrapper86;
-import tart.core.fs.TestFileSystemManager;
+import tart.domain.image.ImageService;
 
-public class AppModelRemoveYearFilterTests {
+public class ImageServiceRemoveYearFilterTests {
 
     @Test
     public void updated() {
@@ -17,8 +19,8 @@ public class AppModelRemoveYearFilterTests {
         f.add(new FileWrapper86("20220101_120000.png"));
         f.add(new FileWrapper86("20230103_120000.jpg"));
         f.add(new FileWrapper86("20240105_120000.jpeg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expectedDays = List.of(
                 new Mask("01", false, false),
                 new Mask("03", false, false),
@@ -34,13 +36,13 @@ public class AppModelRemoveYearFilterTests {
         );
 
         // Act
-        s.scan("test");
-        s.addYearFilter("2022");
-        s.addYearFilter("2024");
-        s.removeYearFilter("2022");
-        var actualDays = s.getDays();
-        var actualMonths = s.getMonths();
-        var actualYears = s.getYears();
+        is.scan("test");
+        is.addYearFilter("2022");
+        is.addYearFilter("2024");
+        is.removeYearFilter("2022");
+        var actualDays = is.getDays();
+        var actualMonths = is.getMonths();
+        var actualYears = is.getYears();
 
         // Assert
         assertEquals(expectedDays, actualDays);

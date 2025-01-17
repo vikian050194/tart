@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import tart.app.AppModel;
+import tart.domain.image.ImageService;
 
 public abstract class Filter extends JPanel implements ActionListener, ChangeListener {
 
@@ -23,12 +23,12 @@ public abstract class Filter extends JPanel implements ActionListener, ChangeLis
     }
 
     private boolean enabled;
-    protected final AppModel model;
+    protected final ImageService model;
     private final JPanel buttons;
     protected final List<Mask> previousValues;
     private LogicalType logicalType = LogicalType.AND;
 
-    public Filter(String n, AppModel m) {
+    public Filter(String n, ImageService m) {
         enabled = true;
 
         model = m;

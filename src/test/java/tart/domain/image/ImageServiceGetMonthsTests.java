@@ -1,26 +1,28 @@
-package tart.app;
+package tart.domain.image;
 
+import tart.data.image.TestImageRepository;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.app.Mask;
 import tart.app.core.wrapper.FileWrapper;
 import tart.app.core.wrapper.FileWrapper86;
-import tart.core.fs.TestFileSystemManager;
+import tart.domain.image.ImageService;
 
-public class AppModelGetYearsTests {
+public class ImageServiceGetMonthsTests {
 
     @Test
     public void noValue() {
         // Arrange
         var f = new ArrayList<FileWrapper>();
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = List.of();
 
         // Act
-        s.scan("test");
-        var actual = s.getYears();
+        is.scan("test");
+        var actual = is.getMonths();
 
         // Assert
         assertIterableEquals(expected, actual);
@@ -31,18 +33,18 @@ public class AppModelGetYearsTests {
         // Arrange
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = List.of(
-                new Mask("2024", true, false)
+                new Mask("01", true, false)
         );
 
         // Act
-        s.scan("test");
-        var actual = s.getYears();
+        is.scan("test");
+        var actual = is.getMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -50,22 +52,22 @@ public class AppModelGetYearsTests {
         // Arrange
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
-        f.add(new FileWrapper86("20220301_120000.jpg"));
-        f.add(new FileWrapper86("20230501_120000.jpeg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        f.add(new FileWrapper86("20240301_120000.jpg"));
+        f.add(new FileWrapper86("20240501_120000.jpeg"));
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = List.of(
-                new Mask("2022", true, false),
-                new Mask("2023", true, false),
-                new Mask("2024", true, false)
+                new Mask("01", true, false),
+                new Mask("03", true, false),
+                new Mask("05", true, false)
         );
 
         // Act
-        s.scan("test");
-        var actual = s.getYears();
+        is.scan("test");
+        var actual = is.getMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 
     @Test
@@ -74,17 +76,17 @@ public class AppModelGetYearsTests {
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240201_120000.png"));
         f.add(new FileWrapper86("20240201_130000.png"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = List.of(
-                new Mask("2024", true, false)
+                new Mask("02", true, false)
         );
 
         // Act
-        s.scan("test");
-        var actual = s.getYears();
+        is.scan("test");
+        var actual = is.getMonths();
 
         // Assert
-        assertEquals(expected, actual);
+        assertIterableEquals(expected, actual);
     }
 }

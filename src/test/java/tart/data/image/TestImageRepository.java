@@ -1,23 +1,23 @@
-package tart.core.fs;
+package tart.data.image;
 
-import tart.domain.image.FileSystemManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import tart.app.core.wrapper.FileWrapper;
 import tart.core.matcher.FileMatcher;
+import tart.domain.image.ImageRepository;
 
-public class TestFileSystemManager implements FileSystemManager {
+public class TestImageRepository implements ImageRepository {
 
     private boolean inspectResultValue = true;
     private File root;
     public final List<FileWrapper> files;
 
-    public TestFileSystemManager() {
+    public TestImageRepository() {
         files = new ArrayList<>();
     }
 
-    public TestFileSystemManager(List<FileWrapper> f) {
+    public TestImageRepository(List<FileWrapper> f) {
         files = f;
     }
 

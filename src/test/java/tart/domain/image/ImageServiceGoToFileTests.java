@@ -1,26 +1,27 @@
-package tart.app;
+package tart.domain.image;
 
+import tart.data.image.TestImageRepository;
 import java.io.File;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import tart.app.core.wrapper.FileWrapper;
 import tart.app.core.wrapper.FileWrapper86;
-import tart.core.fs.TestFileSystemManager;
+import tart.domain.image.ImageService;
 
-public class AppModelGoToFileTests {
+public class ImageServiceGoToFileTests {
 
     @Test
     public void nextFileNoFile() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository();
+        var is = new ImageService(ir);
         File expected = null;
 
         // Act
-        s.scan("test");
-        s.gotoNextFile();
-        var actual = s.getFile();
+        is.scan("test");
+        is.gotoNextFile();
+        var actual = is.getFile();
 
         // Assert
         assertEquals(expected, actual);
@@ -32,14 +33,14 @@ public class AppModelGoToFileTests {
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
         f.add(new FileWrapper86("20240103_120000.jpg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = f.get(1);
 
         // Act
-        s.scan("test");
-        s.gotoNextFile();
-        var actual = s.getFile();
+        is.scan("test");
+        is.gotoNextFile();
+        var actual = is.getFile();
 
         // Assert
         assertEquals(expected, actual);
@@ -48,14 +49,14 @@ public class AppModelGoToFileTests {
     @Test
     public void previousFileNoFile() {
         // Arrange
-        var fsm = new TestFileSystemManager();
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository();
+        var is = new ImageService(ir);
         File expected = null;
 
         // Act
-        s.scan("test");
-        s.gotoPreviousFile();
-        var actual = s.getFile();
+        is.scan("test");
+        is.gotoPreviousFile();
+        var actual = is.getFile();
 
         // Assert
         assertEquals(expected, actual);
@@ -67,14 +68,14 @@ public class AppModelGoToFileTests {
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
         f.add(new FileWrapper86("20240103_120000.jpg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = f.get(1);
 
         // Act
-        s.scan("test");
-        s.gotoPreviousFile();
-        var actual = s.getFile();
+        is.scan("test");
+        is.gotoPreviousFile();
+        var actual = is.getFile();
 
         // Assert
         assertEquals(expected, actual);
@@ -86,15 +87,15 @@ public class AppModelGoToFileTests {
         var f = new ArrayList<FileWrapper>();
         f.add(new FileWrapper86("20240101_120000.png"));
         f.add(new FileWrapper86("20240103_120000.jpg"));
-        var fsm = new TestFileSystemManager(f);
-        var s = new AppModel(fsm);
+        var ir = new TestImageRepository(f);
+        var is = new ImageService(ir);
         var expected = f.get(0);
 
         // Act
-        s.scan("test");
-        s.gotoNextFile();
-        s.gotoPreviousFile();
-        var actual = s.getFile();
+        is.scan("test");
+        is.gotoNextFile();
+        is.gotoPreviousFile();
+        var actual = is.getFile();
 
         // Assert
         assertEquals(expected, actual);
