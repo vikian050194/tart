@@ -1,14 +1,14 @@
-package tart.app;
+package tart.domain.image;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterModel {
+public class Filter {
 
     protected final List<String> items = new ArrayList<>();
     protected final String defaultMask;
 
-    public FilterModel(String d) {
+    public Filter(String d) {
         defaultMask = d;
     }
 

@@ -6,11 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
-import tart.app.FilterModel;
-import tart.app.Mask;
 import tart.app.core.wrapper.FileWrapper;
 import tart.core.matcher.InlineFileMatcher;
 import tart.core.matcher.data.FileMatcher42;
@@ -29,9 +24,6 @@ public class ImageService {
     private static final String MONTH_MASK = "\\d{2}";
     private static final String DAY_MASK = "\\d{2}";
     private static final String DIR_MASK = ".*";
-
-    protected ChangeEvent changeEvent = null;
-    protected EventListenerList listenerList = new EventListenerList();
 
     private int index;
     private int size;
@@ -52,10 +44,10 @@ public class ImageService {
     private final List<String> availableMonths = new ArrayList<>();
     private final List<String> availableDays = new ArrayList<>();
 
-    private final FilterModel yearsFilter = new FilterModel(YEAR_MASK);
-    private final FilterModel monthsFilter = new FilterModel(MONTH_MASK);
-    private final FilterModel daysFilter = new FilterModel(DAY_MASK);
-    private final FilterModel dirFilter = new FilterModel(DIR_MASK);
+    private final Filter yearsFilter = new Filter(YEAR_MASK);
+    private final Filter monthsFilter = new Filter(MONTH_MASK);
+    private final Filter daysFilter = new Filter(DAY_MASK);
+    private final Filter dirFilter = new Filter(DIR_MASK);
 
     public void filter() {
         // TODO is it possible to remove this boilerplate array creating?
@@ -96,8 +88,6 @@ public class ImageService {
         updateAvailableValues();
 
         size = filFiles.size();
-
-        fireStateChanged();
     }
 
     private void updateAvailableValues() {
@@ -245,8 +235,6 @@ public class ImageService {
         if (index < 0) {
             index = filFiles.size() - 1;
         }
-
-        fireStateChanged();
     }
 
     public void gotoNextFile() {
@@ -255,8 +243,6 @@ public class ImageService {
         if (index >= filFiles.size()) {
             index = 0;
         }
-
-        fireStateChanged();
     }
 
     public void deleteFile() {
@@ -266,8 +252,6 @@ public class ImageService {
         imageRepository.delete(targetFile);
 
         size = filFiles.size();
-
-        fireStateChanged();
     }
 
     public FileWrapper getFile() {
@@ -445,28 +429,6 @@ public class ImageService {
         var file = getFile();
         var newFile = imageRepository.moveTo(file.getFile(), target);
         setFile(newFile);
-
-        fireStateChanged();
-    }
-
-    public void addChangeListener(ChangeListener l) {
-        listenerList.add(ChangeListener.class, l);
-    }
-
-    public void removeChangeListener(ChangeListener l) {
-        listenerList.remove(ChangeListener.class, l);
-    }
-
-    protected void fireStateChanged() {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                if (changeEvent == null) {
-                    changeEvent = new ChangeEvent(this);
-                }
-                ((ChangeListener) listeners[i + 1]).stateChanged(changeEvent);
-            }
-        }
     }
 
     public int getIndex() {

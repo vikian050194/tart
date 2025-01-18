@@ -1,4 +1,4 @@
-package tart.app;
+package tart.domain.image;
 
 import java.util.Objects;
 
