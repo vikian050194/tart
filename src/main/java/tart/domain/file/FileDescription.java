@@ -1,5 +1,6 @@
 package tart.domain.file;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileDescription implements NodeDescription {
@@ -24,5 +25,12 @@ public class FileDescription implements NodeDescription {
     @Override
     public List<String> getDirs() {
         return dirs;
+    }
+
+    @Override
+    public List<String> getFullName() {
+        var result = new ArrayList<>(dirs);
+        result.add(name);
+        return List.copyOf(result);
     }
 }

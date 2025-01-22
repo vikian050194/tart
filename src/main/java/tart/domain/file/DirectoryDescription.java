@@ -2,7 +2,7 @@ package tart.domain.file;
 
 import java.util.List;
 
-public class DirectoryDescription implements NodeDescription{
+public class DirectoryDescription implements NodeDescription {
 
     private final List<String> dirs;
 
@@ -20,5 +20,10 @@ public class DirectoryDescription implements NodeDescription{
     public List<String> getDirs() {
         var index = dirs.size() - 1;
         return dirs.subList(0, index);
+    }
+
+    @Override
+    public List<String> getFullName() {
+        return List.copyOf(dirs);
     }
 }

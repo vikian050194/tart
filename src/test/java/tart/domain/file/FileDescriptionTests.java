@@ -4,14 +4,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-public class DirectoryDescriptionTests {
+public class FileDescriptionTests {
 
     @Test
     public void getName() {
         // Arrange
-        var expectedName = "baz";
-        var dirs = List.of("foo", "bar", "baz");
-        NodeDescription d = new DirectoryDescription(dirs);
+        var expectedName = "baz.json";
+        var name = "baz.json";
+        var dirs = List.of("foo", "bar");
+        NodeDescription d = new FileDescription(name, dirs);
 
         // Act
         var actualName = d.getName();
@@ -24,8 +25,9 @@ public class DirectoryDescriptionTests {
     public void getDirs() {
         // Arrange
         var expectedDirs = List.of("foo", "bar");
-        var dirs = List.of("foo", "bar", "baz");
-        NodeDescription d = new DirectoryDescription(dirs);
+        var name = "baz.json";
+        var dirs = List.of("foo", "bar");
+        NodeDescription d = new FileDescription(name, dirs);
 
         // Act
         var actualDirs = d.getDirs();
@@ -37,9 +39,10 @@ public class DirectoryDescriptionTests {
     @Test
     public void getFullName() {
         // Arrange
-        var expectedFullName = List.of("foo", "bar", "baz");
-        var dirs = List.of("foo", "bar", "baz");
-        NodeDescription d = new DirectoryDescription(dirs);
+        var expectedFullName = List.of("foo", "bar", "baz.json");
+        var name = "baz.json";
+        var dirs = List.of("foo", "bar");
+        NodeDescription d = new FileDescription(name, dirs);
 
         // Act
         var actualFullName = d.getFullName();
