@@ -3,6 +3,7 @@ package tart.core.matcher;
 import java.io.File;
 import java.util.regex.Pattern;
 import tart.app.core.wrapper.FileWrapper;
+import tart.domain.file.FileDescription;
 
 public abstract class FileMatcher {
 
@@ -33,4 +34,16 @@ public abstract class FileMatcher {
     }
 
     public abstract FileWrapper wrap(File file);
+
+    public boolean isNameMatch(FileDescription fd) {
+        return isMatch(fd.getName());
+    }
+
+    public boolean isExtensionMatch(FileDescription fd) {
+        return isMatch(fd.getExtension());
+    }
+
+    public boolean isAbsoluteMatch(FileDescription fd) {
+        return isMatch(String.join("", fd.getDirs()));
+    }
 }

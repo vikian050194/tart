@@ -4,17 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.net.URI;
+import java.util.List;
 import tart.app.api.*;
+import static tart.app.api.ApiUtils.splitQuery;
 import tart.app.errors.*;
-import tart.domain.image.ImageService;
+import tart.domain.file.FileService;
 
 public class ImageHandler extends Handler {
 
-    private final ImageService imageService;
+    private final FileService imageService;
 
     public ImageHandler(
-            ImageService imageService,
+            FileService imageService,
             ObjectMapper objectMapper,
             GlobalExceptionHandler exceptionHandler
     ) {
@@ -27,7 +29,7 @@ public class ImageHandler extends Handler {
         byte[] response;
 
         if ("GET".equals(exchange.getRequestMethod())) {
-            var e = doGet();
+            var e = doGet(exchange.getRequestURI());
 //            response = super.writeResponse(e.getBody());
             response = e.getBody();
             exchange.getResponseHeaders().putAll(e.getHeaders());
@@ -44,16 +46,16 @@ public class ImageHandler extends Handler {
 //        exchange.close();
     }
 
-    private ResponseEntity<byte[]> doGet() throws IOException {
+    private ResponseEntity<byte[]> doGet(URI uri) throws IOException {
+        var params = splitQuery(uri.getRawQuery());
+        var defaultName = "2024-11-17 09-01-03.JPG";
+        var name = params.getOrDefault("name", List.of(defaultName)).stream().findFirst().orElse(defaultName);
+        
+        
+        var fileDir = List.of("home", "kirill", "Phot");
+        var file = imageService.getFileData(fileDir, name);
 
-        imageService.scan("/home/kirill/Phot");
-        var file = imageService.getFile();
-
-        RandomAccessFile f = new RandomAccessFile(file.getFile().getAbsolutePath(), "r");
-        byte[] bytes = new byte[(int) f.length()];
-        f.readFully(bytes);
-
-        return new ResponseEntity<>(bytes,
+        return new ResponseEntity<>(file.getData(),
                 getHeaders(Constants.CONTENT_TYPE, Constants.IMAGE_JPEG), StatusCode.OK);
     }
 }

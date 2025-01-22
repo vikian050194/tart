@@ -1,9 +1,9 @@
 package tart.core;
 
-import tart.domain.image.Filter;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.domain.file.Filter;
 
 public class DateFilterGetMasksTests {
 

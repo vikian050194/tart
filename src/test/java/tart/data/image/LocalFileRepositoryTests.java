@@ -3,15 +3,16 @@ package tart.data.image;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+import tart.data.file.LocalFileRepository;
 
-public class FileSystemImageRepositoryTests {
+public class LocalFileRepositoryTests {
 
     @Test
-    public void success() {
+    public void moveTo() {
         // Arrange
         var testFile = new File("20240101_120000.jpg");
         var testDirectory = new File("foo");
-        var ir = new FileSystemImageRepository();
+        var ir = new LocalFileRepository();
         var expected = new File("foo/20240101_120000.jpg");
 
         // Act

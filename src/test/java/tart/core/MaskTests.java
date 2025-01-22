@@ -1,8 +1,8 @@
 package tart.core;
 
-import tart.domain.image.Mask;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import tart.domain.file.Mask;
 
 public class MaskTests {
 
