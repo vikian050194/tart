@@ -22,12 +22,15 @@ public abstract class Handler {
 
     private final ObjectMapper objectMapper;
     private final GlobalExceptionHandler exceptionHandler;
+    protected static final String URL_PREFIX = "/api/";
 
     public Handler(ObjectMapper objectMapper,
             GlobalExceptionHandler exceptionHandler) {
         this.objectMapper = objectMapper;
         this.exceptionHandler = exceptionHandler;
     }
+
+    public abstract String url();
 
     public void handle(HttpExchange exchange) {
         Try.run(() -> execute(exchange))

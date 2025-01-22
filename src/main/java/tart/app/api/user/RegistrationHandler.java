@@ -9,19 +9,25 @@ import tart.app.api.Constants;
 import tart.app.api.Handler;
 import tart.app.api.ResponseEntity;
 import tart.app.api.StatusCode;
-import tart.domain.user.NewUser;
-import tart.domain.user.UserService;
 import tart.app.errors.ApplicationExceptions;
 import tart.app.errors.GlobalExceptionHandler;
+import tart.domain.user.NewUser;
+import tart.domain.user.UserService;
 
 public class RegistrationHandler extends Handler {
 
     private final UserService userService;
 
     public RegistrationHandler(UserService userService, ObjectMapper objectMapper,
-                               GlobalExceptionHandler exceptionHandler) {
+            GlobalExceptionHandler exceptionHandler) {
         super(objectMapper, exceptionHandler);
         this.userService = userService;
+    }
+
+    @Override
+    public String url() {
+        // TODO is it better to store or return array?
+        return URL_PREFIX + "users/register";
     }
 
     @Override
@@ -34,7 +40,7 @@ public class RegistrationHandler extends Handler {
             response = super.writeResponse(e.getBody());
         } else {
             throw ApplicationExceptions.methodNotAllowed(
-                "Method " + exchange.getRequestMethod() + " is not allowed for " + exchange.getRequestURI()).get();
+                    "Method " + exchange.getRequestMethod() + " is not allowed for " + exchange.getRequestURI()).get();
         }
 
         OutputStream os = exchange.getResponseBody();
@@ -46,15 +52,15 @@ public class RegistrationHandler extends Handler {
         RegistrationRequest registerRequest = super.readRequest(is, RegistrationRequest.class);
 
         NewUser user = NewUser.builder()
-            .login(registerRequest.getLogin())
-            .password(PasswordEncoder.encode(registerRequest.getPassword()))
-            .build();
+                .login(registerRequest.getLogin())
+                .password(PasswordEncoder.encode(registerRequest.getPassword()))
+                .build();
 
         String userId = userService.create(user);
 
         RegistrationResponse response = new RegistrationResponse(userId);
 
         return new ResponseEntity<>(response,
-            getHeaders(Constants.CONTENT_TYPE, Constants.APPLICATION_JSON), StatusCode.OK);
+                getHeaders(Constants.CONTENT_TYPE, Constants.APPLICATION_JSON), StatusCode.OK);
     }
 }

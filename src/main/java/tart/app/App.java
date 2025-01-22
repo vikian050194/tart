@@ -18,15 +18,15 @@ public final class App {
 
         var registrationHandler = new RegistrationHandler(getUserService(), getObjectMapper(),
                 getErrorHandler());
-        server.createContext("/api/users/register", registrationHandler::handle);
+        server.createContext(registrationHandler.url(), registrationHandler::handle);
 
         var fileHandler = new FileHandler(getImageService(), getObjectMapper(),
                 getErrorHandler());
-        server.createContext("/api/file", fileHandler::handle);
+        server.createContext(fileHandler.url(), fileHandler::handle);
 
         var helloHandler = new HelloHandler(getObjectMapper(),
                 getErrorHandler());
-        server.createContext("/api/hello", helloHandler::handle);
+        server.createContext(helloHandler.url(), helloHandler::handle);
 
 //        context.setAuthenticator(new BasicAuthenticator("myrealm") {
 //            @Override

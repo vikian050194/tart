@@ -21,6 +21,12 @@ public class HelloHandler extends Handler {
     }
 
     @Override
+    public String url() {
+        // TODO is it better to store or return array?
+        return URL_PREFIX + "hello";
+    }
+
+    @Override
     protected void execute(HttpExchange exchange) throws IOException {
         byte[] response;
 

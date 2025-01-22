@@ -11,8 +11,20 @@ public class FileService {
         imageRepository = ir;
     }
 
-    public FileData getFileData(List<String> dirs, String name) throws IOException {
-        return imageRepository.getData(new FileDescription(dirs, name));
+    public List<DirectoryDescription> getDirectories() {
+        return imageRepository.getDirectories();
+    }
+
+    public List<DirectoryDescription> getDirectories(List<String> d) {
+        return imageRepository.getDirectories(new DirectoryDescription(d));
+    }
+
+    public List<FileDescription> getDescriptions(List<String> d) {
+        return imageRepository.getDescriptions(new DirectoryDescription(d));
+    }
+
+    public FileData getFileData(List<String> d, String n) throws IOException {
+        return imageRepository.getData(new FileDescription(d, n));
     }
 
 }
