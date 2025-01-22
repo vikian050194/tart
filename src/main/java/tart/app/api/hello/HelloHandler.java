@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
-import static tart.app.api.ApiUtils.splitQuery;
 import tart.app.api.Constants;
 import tart.app.api.Handler;
 import tart.app.api.ResponseEntity;

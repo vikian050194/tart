@@ -13,8 +13,8 @@ public interface FileRepository {
 
     public FileData getData(FileDescription f) throws IOException, FileNotFoundException;
 
-    public File update(FileDescription f);
+    public boolean update(FileDescription f);
 
-    public void delete(FileDescription f);
+    public boolean delete(FileDescription f);
 
 }

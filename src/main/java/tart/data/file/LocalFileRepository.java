@@ -49,7 +49,7 @@ public class LocalFileRepository implements FileRepository {
     private FileDescription mapFileToFileDescription(File f) {
         var name = f.getName();
         var dirs = List.of(f.getParentFile().getAbsolutePath().split(File.separator));
-        return new FileDescription(name, dirs);
+        return new FileDescription(dirs, name);
     }
 
     @Override
@@ -82,12 +82,12 @@ public class LocalFileRepository implements FileRepository {
     }
 
     @Override
-    public File update(FileDescription f) {
+    public boolean update(FileDescription f) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void delete(FileDescription f) {
+    public boolean delete(FileDescription f) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

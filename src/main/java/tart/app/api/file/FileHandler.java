@@ -5,9 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.List;
 import tart.app.api.*;
-import static tart.app.api.ApiUtils.splitQuery;
 import tart.app.errors.*;
 import tart.domain.file.FileService;
 
@@ -43,17 +41,16 @@ public class FileHandler extends Handler {
             os.write(response);
         }
 
-//        exchange.close();
+        // TODO is close call redundant?
+        exchange.close();
     }
 
     private ResponseEntity<byte[]> doGet(URI uri) throws IOException {
         var params = splitQuery(uri.getRawQuery());
-        var defaultName = "2024-11-17 09-01-03.JPG";
-        var name = params.getOrDefault("name", List.of(defaultName)).stream().findFirst().orElse(defaultName);
-        
-        
-        var fileDir = List.of("home", "kirill", "Phot");
-        var file = imageService.getFileData(fileDir, name);
+        var dir = params.get("dir").stream().toList();
+        var name = params.get("name").stream().findFirst().orElseThrow();
+
+        var file = imageService.getFileData(dir, name);
 
         return new ResponseEntity<>(file.getData(),
                 getHeaders(Constants.CONTENT_TYPE, Constants.IMAGE_JPEG), StatusCode.OK);

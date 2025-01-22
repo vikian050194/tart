@@ -12,7 +12,7 @@ public class FileDescriptionTests {
         var expectedName = "baz.json";
         var name = "baz.json";
         var dirs = List.of("foo", "bar");
-        NodeDescription d = new FileDescription(name, dirs);
+        NodeDescription d = new FileDescription(dirs, name);
 
         // Act
         var actualName = d.getName();
@@ -27,7 +27,7 @@ public class FileDescriptionTests {
         var expectedDirs = List.of("foo", "bar");
         var name = "baz.json";
         var dirs = List.of("foo", "bar");
-        NodeDescription d = new FileDescription(name, dirs);
+        NodeDescription d = new FileDescription(dirs, name);
 
         // Act
         var actualDirs = d.getDirs();
@@ -42,12 +42,27 @@ public class FileDescriptionTests {
         var expectedFullName = List.of("foo", "bar", "baz.json");
         var name = "baz.json";
         var dirs = List.of("foo", "bar");
-        NodeDescription d = new FileDescription(name, dirs);
+        NodeDescription d = new FileDescription(dirs, name);
 
         // Act
         var actualFullName = d.getFullName();
 
         // Assert
         assertEquals(expectedFullName, actualFullName);
+    }
+
+    @Test
+    public void getExtension() {
+        // Arrange
+        var expectedExtension = "json";
+        var name = "baz.json";
+        var dirs = List.of("foo", "bar");
+        var d = new FileDescription(dirs, name);
+
+        // Act
+        var actualExtension = d.getExtension();
+
+        // Assert
+        assertEquals(expectedExtension, actualExtension);
     }
 }

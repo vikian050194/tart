@@ -3,12 +3,14 @@ package tart.domain.file;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO is it better to make parent and child classes instead of interface NodeDescription?
 public class FileDescription implements NodeDescription {
 
     private final String name;
     private final List<String> dirs;
+    private static final String EXTENSION_DELIMITER = ".";
 
-    public FileDescription(String n, List<String> d) {
+    public FileDescription(List<String> d, String n) {
         name = n;
         dirs = d;
     }
@@ -19,7 +21,8 @@ public class FileDescription implements NodeDescription {
     }
 
     public String getExtension() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        var index = name.indexOf(EXTENSION_DELIMITER);
+        return name.substring(index + 1);
     }
 
     @Override

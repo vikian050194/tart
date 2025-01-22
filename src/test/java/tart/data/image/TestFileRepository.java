@@ -1,6 +1,5 @@
 package tart.data.image;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -29,12 +28,12 @@ public class TestFileRepository implements FileRepository {
     }
 
     @Override
-    public File update(FileDescription f) {
+    public boolean update(FileDescription f) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void delete(FileDescription f) {
+    public boolean delete(FileDescription f) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
