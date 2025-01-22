@@ -1,25 +1,38 @@
 package tart.data.image;
 
-import java.io.File;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import tart.data.file.LocalFileRepository;
+import tart.domain.file.DirectoryDescription;
+import tart.domain.file.FileRepository;
 
 public class LocalFileRepositoryTests {
 
     @Test
-    public void moveTo() {
+    public void getDirectoriesAtHome() {
         // Arrange
-        var testFile = new File("20240101_120000.jpg");
-        var testDirectory = new File("foo");
-        var ir = new LocalFileRepository();
-        var expected = new File("foo/20240101_120000.jpg");
+        FileRepository fr = new LocalFileRepository();
+        var expectedSize = 37;
 
         // Act
-        var actual = ir.moveTo(testFile, testDirectory);
+        var actualSize = fr.getDirectories().size();
 
         // Assert
-        assertEquals(expected, actual);
+        assertEquals(expectedSize, actualSize);
     }
 
+    @Test
+    public void getDirectoriesAtTarget() {
+        // Arrange
+        var target = new DirectoryDescription(List.of("home", "kirill", "git"));
+        FileRepository fr = new LocalFileRepository();
+        var expectedSize = 37;
+
+        // Act
+        var actualSize = fr.getDirectories(target).size();
+
+        // Assert
+        assertEquals(expectedSize, actualSize);
+    }
 }

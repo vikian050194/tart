@@ -1,4 +1,4 @@
-package tart.app.api.image;
+package tart.app.api.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -11,11 +11,11 @@ import static tart.app.api.ApiUtils.splitQuery;
 import tart.app.errors.*;
 import tart.domain.file.FileService;
 
-public class ImageHandler extends Handler {
+public class FileHandler extends Handler {
 
     private final FileService imageService;
 
-    public ImageHandler(
+    public FileHandler(
             FileService imageService,
             ObjectMapper objectMapper,
             GlobalExceptionHandler exceptionHandler

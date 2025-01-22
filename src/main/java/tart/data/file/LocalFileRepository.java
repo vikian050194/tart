@@ -35,27 +35,38 @@ public class LocalFileRepository implements FileRepository {
 
     @Override
     public List<DirectoryDescription> getDirectories(DirectoryDescription d) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public List<FileDescription> getDescriptions(DirectoryDescription d) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private String getFullName(FileDescription f) {
+        var fullName = new ArrayList<String>();
+        fullName.add(File.separator);
+        fullName.addAll(f.getDirs());
+        fullName.add(f.getName());
+        return String.join(File.separator, fullName);
     }
 
     @Override
-    public List<FileData> getDatas(DirectoryDescription d) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public FileData getData(FileDescription f) throws IOException, FileNotFoundException {
+        RandomAccessFile raf = new RandomAccessFile(getFullName(f), "r");
+        byte[] bytes = new byte[(int) raf.length()];
+        raf.readFully(bytes);
+        return new FileData(bytes);
     }
 
     @Override
     public File update(FileDescription f) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void delete(FileDescription f) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private final ArrayList<FileWrapper> files = new ArrayList<>();
@@ -135,19 +146,4 @@ public class LocalFileRepository implements FileRepository {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private String getFullName(FileDescription f) {
-        var fullName = new ArrayList<String>();
-        fullName.add(File.separator);
-        fullName.addAll(f.getDirs());
-        fullName.add(f.getName());
-        return String.join(File.separator, fullName);
-    }
-
-    @Override
-    public byte[] getData(FileDescription f) throws IOException, FileNotFoundException {
-        RandomAccessFile raf = new RandomAccessFile(getFullName(f), "r");
-        byte[] bytes = new byte[(int) raf.length()];
-        raf.readFully(bytes);
-        return bytes;
-    }
 }

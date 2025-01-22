@@ -12,7 +12,7 @@ public class FileService {
     }
 
     public FileData getFileData(List<String> fileDir, String fileName) throws IOException {
-        return new FileData(imageRepository.getData(new FileDescription(fileName, fileDir)));
+        return imageRepository.getData(new FileDescription(fileName, fileDir));
     }
 
 }

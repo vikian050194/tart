@@ -1,11 +1,11 @@
 package tart.app;
 
-import tart.app.api.hello.HelloHandler;
-import tart.app.api.image.ImageHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import static tart.app.Configuration.*;
+import tart.app.api.file.FileHandler;
+import tart.app.api.hello.HelloHandler;
 import tart.app.api.user.*;
 
 public final class App {
@@ -20,9 +20,9 @@ public final class App {
                 getErrorHandler());
         server.createContext("/api/users/register", registrationHandler::handle);
 
-        var imageHandler = new ImageHandler(getImageService(), getObjectMapper(),
+        var fileHandler = new FileHandler(getImageService(), getObjectMapper(),
                 getErrorHandler());
-        server.createContext("/api/image", imageHandler::handle);
+        server.createContext("/api/file", fileHandler::handle);
 
         var helloHandler = new HelloHandler(getObjectMapper(),
                 getErrorHandler());

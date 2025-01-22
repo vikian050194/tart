@@ -10,13 +10,11 @@ public interface FileRepository {
     public List<DirectoryDescription> getDirectories(DirectoryDescription d);
 
     public List<FileDescription> getDescriptions(DirectoryDescription d);
-    
-    public List<FileData> getDatas(DirectoryDescription d);
+
+    public FileData getData(FileDescription f) throws IOException, FileNotFoundException;
 
     public File update(FileDescription f);
 
     public void delete(FileDescription f);
-
-    public byte[] getData(FileDescription f) throws IOException, FileNotFoundException ;
 
 }
