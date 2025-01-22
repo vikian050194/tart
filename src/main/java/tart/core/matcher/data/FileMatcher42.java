@@ -1,8 +1,8 @@
 package tart.core.matcher.data;
 
 import java.io.File;
-import tart.app.core.wrapper.FileWrapper;
-import tart.app.core.wrapper.FileWrapper42;
+import tart.core.wrapper.FileWrapper;
+import tart.core.wrapper.FileWrapper42;
 import tart.core.matcher.FileMatcher;
 
 public class FileMatcher42 extends FileMatcher {

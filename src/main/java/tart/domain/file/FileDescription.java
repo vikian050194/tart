@@ -2,7 +2,7 @@ package tart.domain.file;
 
 import java.util.List;
 
-public class FileDescription {
+public class FileDescription implements NodeDescription {
 
     private final String name;
     private final List<String> dirs;
@@ -12,6 +12,7 @@ public class FileDescription {
         dirs = d;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -20,6 +21,7 @@ public class FileDescription {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public List<String> getDirs() {
         return dirs;
     }

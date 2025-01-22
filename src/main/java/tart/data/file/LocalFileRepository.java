@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import tart.app.core.wrapper.FileWrapper;
 import tart.core.logger.Logger;
 import tart.core.matcher.FileMatcher;
+import tart.core.wrapper.FileWrapper;
 import tart.domain.file.*;
 
 public class LocalFileRepository implements FileRepository {
@@ -34,26 +34,48 @@ public class LocalFileRepository implements FileRepository {
     }
 
     @Override
-    public List<DirectoryDescription> getDirectories(DirectoryDescription d) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<DirectoryDescription> getDirectories(DirectoryDescription dd) {
+        var home = getFullName(dd);
+        var root = new File(home);
+
+        var result = Stream.of(root.listFiles())
+                .filter(file -> file.isDirectory())
+                .map(d -> mapFileToDirectoryDescription(d))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
+    private FileDescription mapFileToFileDescription(File f) {
+        var name = f.getName();
+        var dirs = List.of(f.getParentFile().getAbsolutePath().split(File.separator));
+        return new FileDescription(name, dirs);
     }
 
     @Override
-    public List<FileDescription> getDescriptions(DirectoryDescription d) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<FileDescription> getDescriptions(DirectoryDescription dd) {
+        var home = getFullName(dd);
+        var root = new File(home);
+
+        var result = Stream.of(root.listFiles())
+                .filter(file -> file.isFile())
+                .map(d -> mapFileToFileDescription(d))
+                .collect(Collectors.toList());
+
+        return result;
     }
 
-    private String getFullName(FileDescription f) {
+    private String getFullName(NodeDescription nd) {
         var fullName = new ArrayList<String>();
         fullName.add(File.separator);
-        fullName.addAll(f.getDirs());
-        fullName.add(f.getName());
+        fullName.addAll(nd.getDirs());
+        fullName.add(nd.getName());
         return String.join(File.separator, fullName);
     }
 
     @Override
-    public FileData getData(FileDescription f) throws IOException, FileNotFoundException {
-        RandomAccessFile raf = new RandomAccessFile(getFullName(f), "r");
+    public FileData getData(FileDescription fd) throws IOException, FileNotFoundException {
+        RandomAccessFile raf = new RandomAccessFile(getFullName(fd), "r");
         byte[] bytes = new byte[(int) raf.length()];
         raf.readFully(bytes);
         return new FileData(bytes);

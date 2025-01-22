@@ -1,7 +1,7 @@
 package tart.core.matcher;
 
 import java.io.File;
-import tart.app.core.wrapper.FileWrapper;
+import tart.core.wrapper.FileWrapper;
 
 public class InlineFileMatcher extends FileMatcher {
 

@@ -27,10 +27,24 @@ public class LocalFileRepositoryTests {
         // Arrange
         var target = new DirectoryDescription(List.of("home", "kirill", "git"));
         FileRepository fr = new LocalFileRepository();
-        var expectedSize = 37;
+        var expectedSize = 33;
 
         // Act
         var actualSize = fr.getDirectories(target).size();
+
+        // Assert
+        assertEquals(expectedSize, actualSize);
+    }
+    
+    @Test
+    public void getDescriptions() {
+        // Arrange
+        var target = new DirectoryDescription(List.of("home", "kirill", "git", "tart"));
+        FileRepository fr = new LocalFileRepository();
+        var expectedSize = 7;
+
+        // Act
+        var actualSize = fr.getDescriptions(target).size();
 
         // Assert
         assertEquals(expectedSize, actualSize);

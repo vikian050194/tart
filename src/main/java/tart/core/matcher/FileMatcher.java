@@ -2,7 +2,7 @@ package tart.core.matcher;
 
 import java.io.File;
 import java.util.regex.Pattern;
-import tart.app.core.wrapper.FileWrapper;
+import tart.core.wrapper.FileWrapper;
 import tart.domain.file.FileDescription;
 
 public abstract class FileMatcher {

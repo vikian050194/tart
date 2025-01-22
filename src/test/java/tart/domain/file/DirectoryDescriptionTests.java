@@ -21,16 +21,16 @@ public class DirectoryDescriptionTests {
     }
 
     @Test
-    public void getAncestors() {
+    public void getDirs() {
         // Arrange
-        var expectedAncestors = List.of("foo", "bar");
+        var expectedDirs = List.of("foo", "bar");
         var dirs = List.of("foo", "bar", "baz");
         var d = new DirectoryDescription(dirs);
 
         // Act
-        var actualAncestors = d.getAncestors();
+        var actualDirs = d.getDirs();
 
         // Assert
-        assertEquals(expectedAncestors, actualAncestors);
+        assertEquals(expectedDirs, actualDirs);
     }
 }
