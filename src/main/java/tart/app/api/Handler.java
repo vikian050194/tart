@@ -32,6 +32,8 @@ public abstract class Handler {
 
     public abstract String url();
 
+    public abstract boolean auth();
+
     public void handle(HttpExchange exchange) {
         Try.run(() -> execute(exchange))
                 .onFailure(thr -> exceptionHandler.handle(thr, exchange));

@@ -27,6 +27,11 @@ public class HelloHandler extends Handler {
     }
 
     @Override
+    public boolean auth() {
+        return true;
+    }
+
+    @Override
     protected void execute(HttpExchange exchange) throws IOException {
         byte[] response;
 

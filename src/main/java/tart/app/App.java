@@ -1,40 +1,80 @@
 package tart.app;
 
+import com.sun.net.httpserver.BasicAuthenticator;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
 import static tart.app.Configuration.*;
-import tart.app.api.file.FileHandler;
-import tart.app.api.hello.HelloHandler;
+import tart.app.Configuration.RunMode;
+import tart.app.api.Handler;
+import tart.app.api.file.*;
+import tart.app.api.hello.*;
 import tart.app.api.user.*;
 
 public final class App {
 
-    public static void main(String[] args) throws IOException {
-        // TODO read port from config
-        int serverPort = 8000;
+    private final HttpServer server;
 
-        var server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+    public App(int httpPort) throws IOException {
+        if (Configuration.runMode() == RunMode.PROD) {
+            server = HttpServer.create(new InetSocketAddress("0.0.0.0", httpPort), 0);
+        } else {
+            server = HttpServer.create(new InetSocketAddress("127.0.0.1", httpPort), 0);
+        }
+//        HttpContextHelper.initializeDummyEndpoints(server::createContext);
+    }
 
-        var registrationHandler = new RegistrationHandler(getUserService(), getObjectMapper(),
-                getErrorHandler());
-        server.createContext(registrationHandler.url(), registrationHandler::handle);
+    private void setAuthenticator(HttpContext c) {
+        // TODO use Handler.auth()
+        if (Configuration.runMode() == RunMode.DEV) {
+            return;
+        }
 
-        var fileHandler = new FileHandler(getImageService(), getObjectMapper(),
-                getErrorHandler());
-        server.createContext(fileHandler.url(), fileHandler::handle);
+        c.setAuthenticator(new BasicAuthenticator("myrealm") {
+            @Override
+            public boolean checkCredentials(String user, String pwd) {
+                return user.equals("admin") && pwd.equals("admin");
+            }
+        });
+    }
 
-        var helloHandler = new HelloHandler(getObjectMapper(),
-                getErrorHandler());
-        server.createContext(helloHandler.url(), helloHandler::handle);
+    public void init() {
+        var handlers = new LinkedList<Handler>();
+        handlers.add(new RegistrationHandler(getUserService(), getObjectMapper(),
+                getErrorHandler()));
+        handlers.add(new FileHandler(getImageService(), getObjectMapper(),
+                getErrorHandler()));
+        handlers.add(new HelloHandler(getObjectMapper(),
+                getErrorHandler()));
 
-//        context.setAuthenticator(new BasicAuthenticator("myrealm") {
-//            @Override
-//            public boolean checkCredentials(String user, String pwd) {
-//                return user.equals("admin") && pwd.equals("admin");
-//            }
-//        });
-        server.setExecutor(null); // creates a default executor
+        var contexts = handlers.stream().map(h -> server.createContext(h.url(), h::handle)).toList();
+
+        contexts.forEach(c ->  setAuthenticator(c));
+
+    }
+
+    public InetSocketAddress start() {
+        // TODO is it needed?
+        server.setExecutor(null);
         server.start();
+        // TODO use logger
+        System.out.println("Server started on %s".formatted(server.getAddress()));
+        return server.getAddress();
+    }
+
+    public void stop(int delay) {
+        server.stop(delay);
+        // TODO use logger
+        System.out.println("Server stopped with code %s".formatted(delay));
+    }
+
+    public static void main(String[] args) throws IOException {
+        var httpPort = Configuration.port();
+
+        var app = new App(httpPort);
+        app.init();
+        app.start();
     }
 }

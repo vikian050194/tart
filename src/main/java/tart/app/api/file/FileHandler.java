@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.List;
 import tart.app.api.*;
 import tart.app.errors.*;
 import tart.domain.file.FileService;
@@ -29,6 +30,11 @@ public class FileHandler extends Handler {
     }
 
     @Override
+    public boolean auth() {
+        return true;
+    }
+
+    @Override
     protected void execute(HttpExchange exchange) throws IOException {
         byte[] response;
 
@@ -47,18 +53,36 @@ public class FileHandler extends Handler {
             os.write(response);
         }
 
-        // TODO is close call redundant?
+        // TODO is it needed?
         exchange.close();
     }
 
     private ResponseEntity<byte[]> doGet(URI uri) throws IOException {
-        var params = splitQuery(uri.getRawQuery());
-        var dir = params.get("dir").stream().toList();
-        var name = params.get("name").stream().findFirst().orElseThrow();
+        var path = uri.getRawPath();
+        var foo = path.substring(url().length());
 
-        var file = imageService.getFileData(dir, name);
+        switch (foo) {
+            case "": {
+                var params = splitQuery(uri.getRawQuery());
+                var dir = params.getOrDefault("dir", List.of()).stream().toList();
+                var name = params.get("name").stream().findFirst().orElseThrow();
+//                var name = "";
 
-        return new ResponseEntity<>(file.getData(),
-                getHeaders(Constants.CONTENT_TYPE, Constants.IMAGE_JPEG), StatusCode.OK);
+                if (dir.isEmpty()) {
+                    var dirs = imageService.getDirectories();
+
+                    return new ResponseEntity<>(dirs.toString().getBytes(),
+                            getHeaders(Constants.CONTENT_TYPE, Constants.TEXT_HTML), StatusCode.OK);
+                }
+
+                // TODO name is optional
+                var file = imageService.getFileData(dir, name);
+
+                return new ResponseEntity<>(file.getData(),
+                        getHeaders(Constants.CONTENT_TYPE, Constants.IMAGE_JPEG), StatusCode.OK);
+            }
+            default:
+                throw new AssertionError();
+        }
     }
 }

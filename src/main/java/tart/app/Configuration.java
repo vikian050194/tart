@@ -4,12 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tart.app.errors.GlobalExceptionHandler;
 import tart.data.file.LocalFileRepository;
 import tart.data.user.InMemoryUserRepository;
+import tart.domain.file.FileRepository;
 import tart.domain.file.FileService;
 import tart.domain.user.UserRepository;
 import tart.domain.user.UserService;
-import tart.domain.file.FileRepository;
 
 class Configuration {
+
+    public static int port() {
+        // TODO read port from config
+        return 8000;
+    }
+
+    enum RunMode {
+        DEV, PROD
+    };
+
+    public static final RunMode runMode() {
+        return RunMode.DEV;
+    }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final UserRepository USER_REPOSITORY = new InMemoryUserRepository();
@@ -25,7 +38,7 @@ class Configuration {
     static FileService getImageService() {
         return IMAGE_SERVICE;
     }
-    
+
     static UserService getUserService() {
         return USER_SERVICE;
     }

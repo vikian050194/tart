@@ -31,6 +31,11 @@ public class RegistrationHandler extends Handler {
     }
 
     @Override
+    public boolean auth() {
+        return false;
+    }
+
+    @Override
     protected void execute(HttpExchange exchange) throws IOException {
         byte[] response;
         if ("POST".equals(exchange.getRequestMethod())) {
